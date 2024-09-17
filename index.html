@@ -21,8 +21,8 @@
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
         }
         #title {
             position: fixed;
@@ -53,9 +53,10 @@
             background-color: #45a049;
         }
         canvas {
-            width: 100% !important;
-            height: 100% !important;
+            width: 100vw !important;
+            height: 100vh !important;
             object-fit: cover;
+            display: block;
         }
     </style>
 </head>
@@ -123,14 +124,23 @@ function initialize()
         
         const width = window.innerWidth;
         const height = window.innerHeight;
+        
         renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
         
         if (arToolkitContext.arController !== null) {
             arToolkitContext.arController.canvas.style.width = width + 'px';
             arToolkitContext.arController.canvas.style.height = height + 'px';
         }
+        
+        // Update camera aspect ratio and projection matrix
+        camera.aspect = width / height;
+        
+        // Update the projection matrix of both the perspective camera and the arToolkitContext
+        if (arToolkitContext.arController !== null) {
+            arToolkitContext.arController.setCameraProjectionMatrix(camera.projectionMatrix, width / height);
+        }
+        
+        camera.updateProjectionMatrix();
     }
 
     arToolkitSource.init(function onReady(){
@@ -147,7 +157,10 @@ function initialize()
     // create atToolkitContext
     arToolkitContext = new THREEx.ArToolkitContext({
         cameraParametersUrl: 'data/camera_para.dat',
-        detectionMode: 'mono'
+        detectionMode: 'mono',
+        maxDetectionRate: 30,
+        canvasWidth: window.innerWidth,
+        canvasHeight: window.innerHeight,
     });
     
     // copy projection matrix to camera when initialization complete
