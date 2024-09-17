@@ -79,7 +79,7 @@ var mesh1;
 initialize();
 animate();
 
-    function initialize()
+function initialize()
 {
     scene = new THREE.Scene();
 
@@ -173,20 +173,12 @@ animate();
     // setup markerRoots
     ////////////////////////////////////////////////////////////
 
-    // build markerControls
     markerRoot1 = new THREE.Group();
     scene.add(markerRoot1);
     let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
         type: 'pattern', patternUrl: "data/hiro.patt",
     })
 
-    // Remove or comment out the blue square
-    // let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-    // let material1 = new THREE.MeshBasicMaterial( { color: 0x0000ff, opacity: 0.5 } );
-    // mesh1 = new THREE.Mesh( geometry1, material1 );
-    // mesh1.rotation.x = -Math.PI/2;
-    // markerRoot1.add( mesh1 );
-    
     function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
     function onError(xhr) { console.log( 'An error happened' ); }
     
