@@ -147,8 +147,6 @@ function initialize()
 
     arToolkitSource.init(function onReady(){
         onResize()
-    }, function onError(){
-        console.error('Error initializing AR source');
     });
     
     window.addEventListener('resize', onResize);
@@ -162,10 +160,10 @@ function initialize()
         detectionMode: 'mono',
         maxDetectionRate: 30,
         canvasWidth: 1280,
-        canvasHeight: 720
+        canvasHeight: 720,
     });
     
-    arToolkitContext.init(function onCompleted(){
+    arToolkitContext.init( function onCompleted(){
         camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
     });
 
@@ -179,6 +177,12 @@ function initialize()
         type: 'pattern', patternUrl: "data/hiro.patt",
     })
 
+    let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
+    let material1 = new THREE.MeshBasicMaterial( { color: 0x0000ff, opacity: 0.5 } );
+    mesh1 = new THREE.Mesh( geometry1, material1 );
+    mesh1.rotation.x = -Math.PI/2;
+    markerRoot1.add( mesh1 );
+    
     function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
     function onError(xhr) { console.log( 'An error happened' ); }
     
@@ -192,14 +196,9 @@ function initialize()
                 .load( 'site_skp1.obj', function ( group ) {
                     mesh0 = group.children[0];
                     mesh0.material.side = THREE.DoubleSide;
-                    
-                    // Adjust position and scale
-                    mesh0.position.set(0, 0, 0); // Center the model on the marker
-                    mesh0.scale.set(0.1, 0.1, 0.1); // Adjust scale as needed
-                    
-                    // Rotate the model if necessary
-                    mesh0.rotation.x = -Math.PI / 2; // Rotate 90 degrees around X-axis
-                    
+                    mesh0.position.set(0, 0, 0);
+                    mesh0.scale.set(0.1, 0.1, 0.1);
+                    mesh0.rotation.x = -Math.PI / 2;
                     markerRoot1.add(mesh0);
                 }, onProgress, onError );
         });
