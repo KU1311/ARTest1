@@ -21,6 +21,8 @@
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
+            width: 100%;
+            height: 100%;
         }
         #title {
             position: fixed;
@@ -50,15 +52,15 @@
         #refreshButton:hover {
             background-color: #45a049;
         }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
     </style>
 </head>
 
 <body>
-
-<!-- 
-  Example created by Lee Stemkoski: https://github.com/stemkoski
-  Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
--->
 
 <div id="title">AR Demo</div>
 <button id="refreshButton" onclick="location.reload()">Refresh</button>
@@ -85,13 +87,14 @@ function initialize()
                 
     camera = new THREE.Camera();
     scene.add(camera);
-    
+
     renderer = new THREE.WebGLRenderer({
         antialias : true,
         alpha: true
     });
     renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-    // Remove this line: renderer.setSize( 640, 480 );
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.style.position = 'absolute'
     renderer.domElement.style.top = '0px'
     renderer.domElement.style.left = '0px'
@@ -117,6 +120,17 @@ function initialize()
         {
             arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)    
         }    
+        
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        
+        if (arToolkitContext.arController !== null) {
+            arToolkitContext.arController.canvas.style.width = width + 'px';
+            arToolkitContext.arController.canvas.style.height = height + 'px';
+        }
     }
 
     arToolkitSource.init(function onReady(){
@@ -124,9 +138,7 @@ function initialize()
     });
     
     // handle resize event
-    window.addEventListener('resize', function(){
-        onResize()
-    });
+    window.addEventListener('resize', onResize);
     
     ////////////////////////////////////////////////////////////
     // setup arToolkitContext
@@ -175,13 +187,11 @@ function initialize()
                 .load( 'site_skp1.obj', function ( group ) {
                     mesh0 = group.children[0];
                     mesh0.material.side = THREE.DoubleSide;
-                    mesh0.position.y = 1;
-                    mesh0.scale.set(1,1,1);
+                    mesh0.position.y = 0.25;
+                    mesh0.scale.set(0.25,0.25,0.25);
                     markerRoot1.add(mesh0);
                 }, onProgress, onError );
         });
-
-    onResize();
 }
 
 
@@ -208,31 +218,6 @@ function animate()
     render();
 }
 
-// Modify the onResize function
-function onResize()
-{
-    arToolkitSource.onResize()    
-    arToolkitSource.copySizeTo(renderer.domElement)    
-    if ( arToolkitContext.arController !== null )
-    {
-        arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)    
-    }    
-    
-    // Add these lines to update renderer size
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    renderer.setSize(width, height);
-    if (arToolkitContext.arController !== null) {
-        arToolkitContext.arController.canvas.style.width = width + 'px';
-        arToolkitContext.arController.canvas.style.height = height + 'px';
-    }
-
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-}
-
-window.addEventListener('resize', onResize);
-    
 </script>
 
 </body>
