@@ -4,76 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>AR Demo</title>
-    <!-- include three.js library -->
     <script src='js/three.js'></script>
     <script src='js/OBJLoader.js'></script>
     <script src='js/MTLLoader.js'></script>
-    <!-- include jsartookit -->
     <script src="jsartoolkit5/artoolkit.min.js"></script>
     <script src="jsartoolkit5/artoolkit.api.js"></script>
-    <!-- include threex.artoolkit -->
     <script src="threex/threex-artoolkitsource.js"></script>
     <script src="threex/threex-artoolkitcontext.js"></script>
     <script src="threex/threex-arbasecontrols.js"></script>
     <script src="threex/threex-armarkercontrols.js"></script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            width: 100vw;
-            height: 100vh;
-        }
-        #title {
-            position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 24px;
-        }
-        #refreshButton {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #refreshButton:hover {
-            background-color: #45a049;
-        }
-        canvas {
-            width: 100vw !important;
-            height: 100vh !important;
-            object-fit: cover;
-            display: block;
-        }
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; width: 100vw; height: 100vh; }
+        #title { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background-color: rgba(0, 0, 0, 0.5); color: white; padding: 10px 20px; border-radius: 5px; font-size: 24px; }
+        #refreshButton { position: fixed; bottom: 20px; right: 20px; z-index: 1000; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #refreshButton:hover { background-color: #45a049; }
+        #debugInfo { position: fixed; top: 50px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 10px; z-index: 1000; }
+        canvas { width: 100vw !important; height: 100vh !important; object-fit: cover; display: block; }
     </style>
 </head>
-
 <body>
-
 <div id="title">AR Demo</div>
 <button id="refreshButton" onclick="location.reload()">Refresh</button>
+<div id="debugInfo"></div>
 
 <script>
-
 var scene, camera, renderer, clock, deltaTime, totalTime;
-
 var arToolkitSource, arToolkitContext;
-
 var markerRoot1;
-
 var mesh1;
 
 initialize();
@@ -82,13 +39,10 @@ animate();
 function initialize()
 {
     scene = new THREE.Scene();
-
     let ambientLight = new THREE.AmbientLight( 0xcccccc, 1.0 );
     scene.add( ambientLight );
-                
     camera = new THREE.Camera();
     scene.add(camera);
-
     renderer = new THREE.WebGLRenderer({
         antialias : true,
         alpha: true
@@ -100,85 +54,52 @@ function initialize()
     renderer.domElement.style.top = '0px'
     renderer.domElement.style.left = '0px'
     document.body.appendChild( renderer.domElement );
-
     clock = new THREE.Clock();
     deltaTime = 0;
     totalTime = 0;
     
-    ////////////////////////////////////////////////////////////
-    // setup arToolkitSource
-    ////////////////////////////////////////////////////////////
-
     arToolkitSource = new THREEx.ArToolkitSource({
         sourceType : 'webcam',
-        sourceWidth: 1280,
-        sourceHeight: 720,
-        displayWidth: window.innerWidth,
-        displayHeight: window.innerHeight
+        sourceWidth: window.innerWidth > window.innerHeight ? 640 : 480,
+        sourceHeight: window.innerWidth > window.innerHeight ? 480 : 640,
     });
 
     function onResize()
     {
-        arToolkitSource.onResize()    
-        arToolkitSource.copySizeTo(renderer.domElement)    
+        arToolkitSource.onResizeElement()
+        arToolkitSource.copyElementSizeTo(renderer.domElement)    
         if ( arToolkitContext.arController !== null )
         {
-            arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)    
+            arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)    
         }    
-        
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        
-        renderer.setSize(width, height);
-        
-        if (arToolkitContext.arController !== null) {
-            arToolkitContext.arController.canvas.style.width = width + 'px';
-            arToolkitContext.arController.canvas.style.height = height + 'px';
-        }
-        
-        camera.aspect = width / height;
-        
-        if (arToolkitContext.arController !== null) {
-            arToolkitContext.arController.setCameraProjectionMatrix(camera.projectionMatrix, width / height);
-        }
-        
-        camera.updateProjectionMatrix();
     }
 
     arToolkitSource.init(function onReady(){
         onResize()
     });
     
-    window.addEventListener('resize', onResize);
+    window.addEventListener('resize', function(){
+        onResize()
+    });
     
-    ////////////////////////////////////////////////////////////
-    // setup arToolkitContext
-    ////////////////////////////////////////////////////////////    
-
     arToolkitContext = new THREEx.ArToolkitContext({
         cameraParametersUrl: 'data/camera_para.dat',
         detectionMode: 'mono',
-        maxDetectionRate: 30,
-        canvasWidth: 1280,
-        canvasHeight: 720,
     });
     
-    arToolkitContext.init( function onCompleted(){
+    arToolkitContext.init(function onCompleted(){
         camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
     });
-
-    ////////////////////////////////////////////////////////////
-    // setup markerRoots
-    ////////////////////////////////////////////////////////////
 
     markerRoot1 = new THREE.Group();
     scene.add(markerRoot1);
     let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-        type: 'pattern', patternUrl: "data/hiro.patt",
+        type: 'pattern',
+        patternUrl: "data/hiro.patt",
     })
 
     let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-    let material1 = new THREE.MeshBasicMaterial( { color: 0x0000ff, opacity: 0.5 } );
+    let material1 = new THREE.MeshBasicMaterial({color: 0x0000ff, opacity: 0.5});
     mesh1 = new THREE.Mesh( geometry1, material1 );
     mesh1.rotation.x = -Math.PI/2;
     markerRoot1.add( mesh1 );
@@ -204,20 +125,24 @@ function initialize()
         });
 }
 
-
 function update()
 {
-    // update artoolkit on every frame
     if ( arToolkitSource.ready !== false )
         arToolkitContext.update( arToolkitSource.domElement );
+    
+    // Update debug info
+    let debugInfo = document.getElementById('debugInfo');
+    debugInfo.innerHTML = `
+        AR Ready: ${arToolkitSource.ready}<br>
+        Marker Visible: ${markerRoot1.visible}<br>
+        Marker Position: ${markerRoot1.position.x.toFixed(2)}, ${markerRoot1.position.y.toFixed(2)}, ${markerRoot1.position.z.toFixed(2)}
+    `;
 }
-
 
 function render()
 {
     renderer.render( scene, camera );
 }
-
 
 function animate()
 {
@@ -227,8 +152,6 @@ function animate()
     update();
     render();
 }
-
 </script>
-
 </body>
 </html>
