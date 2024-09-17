@@ -79,9 +79,95 @@ var mesh1;
 initialize();
 animate();
 
-function initialize()
+    function initialize()
 {
-    // ... (previous initialization code remains the same) ...
+    scene = new THREE.Scene();
+
+    let ambientLight = new THREE.AmbientLight( 0xcccccc, 1.0 );
+    scene.add( ambientLight );
+                
+    camera = new THREE.Camera();
+    scene.add(camera);
+
+    renderer = new THREE.WebGLRenderer({
+        antialias : true,
+        alpha: true
+    });
+    renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.position = 'absolute'
+    renderer.domElement.style.top = '0px'
+    renderer.domElement.style.left = '0px'
+    document.body.appendChild( renderer.domElement );
+
+    clock = new THREE.Clock();
+    deltaTime = 0;
+    totalTime = 0;
+    
+    ////////////////////////////////////////////////////////////
+    // setup arToolkitSource
+    ////////////////////////////////////////////////////////////
+
+    arToolkitSource = new THREEx.ArToolkitSource({
+        sourceType : 'webcam',
+        sourceWidth: 1280,
+        sourceHeight: 720,
+        displayWidth: window.innerWidth,
+        displayHeight: window.innerHeight
+    });
+
+    function onResize()
+    {
+        arToolkitSource.onResize()    
+        arToolkitSource.copySizeTo(renderer.domElement)    
+        if ( arToolkitContext.arController !== null )
+        {
+            arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)    
+        }    
+        
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        renderer.setSize(width, height);
+        
+        if (arToolkitContext.arController !== null) {
+            arToolkitContext.arController.canvas.style.width = width + 'px';
+            arToolkitContext.arController.canvas.style.height = height + 'px';
+        }
+        
+        camera.aspect = width / height;
+        
+        if (arToolkitContext.arController !== null) {
+            arToolkitContext.arController.setCameraProjectionMatrix(camera.projectionMatrix, width / height);
+        }
+        
+        camera.updateProjectionMatrix();
+    }
+
+    arToolkitSource.init(function onReady(){
+        onResize()
+    }, function onError(){
+        console.error('Error initializing AR source');
+    });
+    
+    window.addEventListener('resize', onResize);
+    
+    ////////////////////////////////////////////////////////////
+    // setup arToolkitContext
+    ////////////////////////////////////////////////////////////    
+
+    arToolkitContext = new THREEx.ArToolkitContext({
+        cameraParametersUrl: 'data/camera_para.dat',
+        detectionMode: 'mono',
+        maxDetectionRate: 30,
+        canvasWidth: 1280,
+        canvasHeight: 720
+    });
+    
+    arToolkitContext.init(function onCompleted(){
+        camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+    });
 
     ////////////////////////////////////////////////////////////
     // setup markerRoots
