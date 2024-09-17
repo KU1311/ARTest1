@@ -85,13 +85,13 @@ function initialize()
                 
     camera = new THREE.Camera();
     scene.add(camera);
-
+    
     renderer = new THREE.WebGLRenderer({
         antialias : true,
         alpha: true
     });
     renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-    renderer.setSize( 640, 480 );
+    // Remove this line: renderer.setSize( 640, 480 );
     renderer.domElement.style.position = 'absolute'
     renderer.domElement.style.top = '0px'
     renderer.domElement.style.left = '0px'
@@ -180,6 +180,8 @@ function initialize()
                     markerRoot1.add(mesh0);
                 }, onProgress, onError );
         });
+
+    onResize();
 }
 
 
@@ -206,6 +208,31 @@ function animate()
     render();
 }
 
+// Modify the onResize function
+function onResize()
+{
+    arToolkitSource.onResize()    
+    arToolkitSource.copySizeTo(renderer.domElement)    
+    if ( arToolkitContext.arController !== null )
+    {
+        arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)    
+    }    
+    
+    // Add these lines to update renderer size
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    renderer.setSize(width, height);
+    if (arToolkitContext.arController !== null) {
+        arToolkitContext.arController.canvas.style.width = width + 'px';
+        arToolkitContext.arController.canvas.style.height = height + 'px';
+    }
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+}
+
+window.addEventListener('resize', onResize);
+    
 </script>
 
 </body>
