@@ -60,8 +60,6 @@ function initialize()
     
     arToolkitSource = new THREEx.ArToolkitSource({
         sourceType : 'webcam',
-        sourceWidth: window.innerWidth > window.innerHeight ? 640 : 480,
-        sourceHeight: window.innerWidth > window.innerHeight ? 480 : 640,
     });
 
     function onResize()
@@ -99,13 +97,13 @@ function initialize()
     })
 
     let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-    let material1 = new THREE.MeshBasicMaterial({color: 0x0000ff, opacity: 0.5});
+    let material1 = new THREE.MeshBasicMaterial({color: 0x0000ff, opacity: 0.5, transparent: true});
     mesh1 = new THREE.Mesh( geometry1, material1 );
     mesh1.rotation.x = -Math.PI/2;
     markerRoot1.add( mesh1 );
     
     function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
-    function onError(xhr) { console.log( 'An error happened' ); }
+    function onError(xhr) { console.log( 'An error happened', xhr ); }
     
     new THREE.MTLLoader()
         .setPath( 'model/' )
@@ -117,10 +115,11 @@ function initialize()
                 .load( 'site_skp1.obj', function ( group ) {
                     mesh0 = group.children[0];
                     mesh0.material.side = THREE.DoubleSide;
-                    mesh0.position.set(0, 0, 0);
-                    mesh0.scale.set(0.1, 0.1, 0.1);
+                    mesh0.position.set(0, 0.5, 0); // Adjusted position
+                    mesh0.scale.set(0.01, 0.01, 0.01); // Adjusted scale
                     mesh0.rotation.x = -Math.PI / 2;
                     markerRoot1.add(mesh0);
+                    console.log('3D model loaded and added to markerRoot1');
                 }, onProgress, onError );
         });
 }
@@ -135,7 +134,9 @@ function update()
     debugInfo.innerHTML = `
         AR Ready: ${arToolkitSource.ready}<br>
         Marker Visible: ${markerRoot1.visible}<br>
-        Marker Position: ${markerRoot1.position.x.toFixed(2)}, ${markerRoot1.position.y.toFixed(2)}, ${markerRoot1.position.z.toFixed(2)}
+        Marker Position: ${markerRoot1.position.x.toFixed(2)}, ${markerRoot1.position.y.toFixed(2)}, ${markerRoot1.position.z.toFixed(2)}<br>
+        Marker Rotation: ${markerRoot1.rotation.x.toFixed(2)}, ${markerRoot1.rotation.y.toFixed(2)}, ${markerRoot1.rotation.z.toFixed(2)}<br>
+        Camera Position: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}
     `;
 }
 
