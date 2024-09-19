@@ -4,154 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>AR Demo</title>
-    <script src='js/three.js'></script>
-    <script src='js/OBJLoader.js'></script>
-    <script src='js/MTLLoader.js'></script>
-    <script src="jsartoolkit5/artoolkit.min.js"></script>
-    <script src="jsartoolkit5/artoolkit.api.js"></script>
-    <script src="threex/threex-artoolkitsource.js"></script>
-    <script src="threex/threex-artoolkitcontext.js"></script>
-    <script src="threex/threex-arbasecontrols.js"></script>
-    <script src="threex/threex-armarkercontrols.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; width: 100vw; height: 100vh; }
-        #title { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background-color: rgba(0, 0, 0, 0.5); color: white; padding: 10px 20px; border-radius: 5px; font-size: 24px; }
-        #refreshButton { position: fixed; bottom: 20px; right: 20px; z-index: 1000; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #refreshButton:hover { background-color: #45a049; }
-        #debugInfo { position: fixed; top: 50px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 10px; z-index: 1000; }
-        canvas { width: 100vw !important; height: 100vh !important; object-fit: cover; display: block; }
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #debugInfo { position: fixed; top: 10px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 10px; z-index: 1000; }
+        canvas { width: 100% !important; height: 100% !important; object-fit: cover; }
     </style>
 </head>
 <body>
-<div id="title">AR Demo</div>
-<button id="refreshButton" onclick="location.reload()">Refresh</button>
 <div id="debugInfo"></div>
 
 <script>
-var scene, camera, renderer, clock, deltaTime, totalTime;
-var arToolkitSource, arToolkitContext;
-var markerRoot1;
-var mesh1;
+let scene, camera, renderer, arToolkitSource, arToolkitContext;
+let markerRoot, mesh;
 
-initialize();
+init();
 animate();
 
-function initialize()
-{
+function init() {
     scene = new THREE.Scene();
-    let ambientLight = new THREE.AmbientLight( 0xcccccc, 1.0 );
-    scene.add( ambientLight );
+
     camera = new THREE.Camera();
     scene.add(camera);
+
     renderer = new THREE.WebGLRenderer({
-        antialias : true,
+        antialias: true,
         alpha: true
     });
-    renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(new THREE.Color('lightgrey'), 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.domElement.style.position = 'absolute'
-    renderer.domElement.style.top = '0px'
-    renderer.domElement.style.left = '0px'
-    document.body.appendChild( renderer.domElement );
-    clock = new THREE.Clock();
-    deltaTime = 0;
-    totalTime = 0;
-    
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.top = '0px';
+    renderer.domElement.style.left = '0px';
+    document.body.appendChild(renderer.domElement);
+
     arToolkitSource = new THREEx.ArToolkitSource({
-        sourceType : 'webcam',
+        sourceType: 'webcam',
     });
 
-    function onResize()
-    {
-        arToolkitSource.onResizeElement()
-        arToolkitSource.copyElementSizeTo(renderer.domElement)    
-        if ( arToolkitContext.arController !== null )
-        {
-            arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)    
-        }    
-    }
+    arToolkitSource.init(function onReady() {
+        onResize();
+    });
 
-    arToolkitSource.init(function onReady(){
-        onResize()
-    });
-    
-    window.addEventListener('resize', function(){
-        onResize()
-    });
-    
+    window.addEventListener('resize', onResize);
+
     arToolkitContext = new THREEx.ArToolkitContext({
-        cameraParametersUrl: 'data/camera_para.dat',
+        cameraParametersUrl: 'https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat',
         detectionMode: 'mono',
     });
-    
-    arToolkitContext.init(function onCompleted(){
-        camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+
+    arToolkitContext.init(function onCompleted() {
+        camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
     });
 
-    markerRoot1 = new THREE.Group();
-    scene.add(markerRoot1);
-    let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-        type: 'pattern',
-        patternUrl: "data/hiro.patt",
-    })
+    markerRoot = new THREE.Group();
+    scene.add(markerRoot);
 
-    let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-    let material1 = new THREE.MeshBasicMaterial({color: 0x0000ff, opacity: 0.5, transparent: true});
-    mesh1 = new THREE.Mesh( geometry1, material1 );
-    mesh1.rotation.x = -Math.PI/2;
-    markerRoot1.add( mesh1 );
-    
-    function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
-    function onError(xhr) { console.log( 'An error happened', xhr ); }
-    
-    new THREE.MTLLoader()
-        .setPath( 'model/' )
-        .load( 'site_skp1.mtl', function ( materials ) {
-            materials.preload();
-            new THREE.OBJLoader()
-                .setMaterials( materials )
-                .setPath( 'model/' )
-                .load( 'site_skp1.obj', function ( group ) {
-                    mesh0 = group.children[0];
-                    mesh0.material.side = THREE.DoubleSide;
-                    mesh0.position.set(0, 0.5, 0); // Adjusted position
-                    mesh0.scale.set(0.01, 0.01, 0.01); // Adjusted scale
-                    mesh0.rotation.x = -Math.PI / 2;
-                    markerRoot1.add(mesh0);
-                    console.log('3D model loaded and added to markerRoot1');
-                }, onProgress, onError );
-        });
+    let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+        type: 'pattern',
+        patternUrl: 'https://raw.githack.com/AR-js-org/AR.js/master/data/data/patt.hiro',
+    });
+
+    // Create a blue square
+    let geometry = new THREE.PlaneBufferGeometry(1, 1);
+    let material = new THREE.MeshBasicMaterial({color: 0x0000ff, opacity: 0.5, transparent: true});
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = -Math.PI/2; // Rotate to lay flat on the marker
+    markerRoot.add(mesh);
 }
 
-function update()
-{
-    if ( arToolkitSource.ready !== false )
-        arToolkitContext.update( arToolkitSource.domElement );
-    
+function onResize() {
+    arToolkitSource.onResizeElement();
+    arToolkitSource.copyElementSizeTo(renderer.domElement);
+    if (arToolkitContext.arController !== null) {
+        arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
+    }
+}
+
+function update() {
+    if (arToolkitSource.ready !== false) {
+        arToolkitContext.update(arToolkitSource.domElement);
+    }
+
     // Update debug info
     let debugInfo = document.getElementById('debugInfo');
     debugInfo.innerHTML = `
         AR Ready: ${arToolkitSource.ready}<br>
-        Marker Visible: ${markerRoot1.visible}<br>
-        Marker Position: ${markerRoot1.position.x.toFixed(2)}, ${markerRoot1.position.y.toFixed(2)}, ${markerRoot1.position.z.toFixed(2)}<br>
-        Marker Rotation: ${markerRoot1.rotation.x.toFixed(2)}, ${markerRoot1.rotation.y.toFixed(2)}, ${markerRoot1.rotation.z.toFixed(2)}<br>
+        Marker Visible: ${markerRoot.visible}<br>
+        Marker Position: ${markerRoot.position.x.toFixed(2)}, ${markerRoot.position.y.toFixed(2)}, ${markerRoot.position.z.toFixed(2)}<br>
+        Marker Rotation: ${markerRoot.rotation.x.toFixed(2)}, ${markerRoot.rotation.y.toFixed(2)}, ${markerRoot.rotation.z.toFixed(2)}<br>
         Camera Position: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}
     `;
 }
 
-function render()
-{
-    renderer.render( scene, camera );
-}
-
-function animate()
-{
+function animate() {
     requestAnimationFrame(animate);
-    deltaTime = clock.getDelta();
-    totalTime += deltaTime;
     update();
-    render();
+    renderer.render(scene, camera);
 }
 </script>
 </body>
