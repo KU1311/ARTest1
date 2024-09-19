@@ -11,5 +11,5 @@ newmtl Tiles1
 Ka 0.000000 0.000000 0.000000
 Kd 0.741176 0.623529 0.721569
 Ks 0.330000 0.330000 0.330000
-map_Kd site_skp1/Tiles1.png
+map_Kd Tiles1.png
 
