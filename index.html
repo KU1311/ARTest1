@@ -4,132 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>AR Demo</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/MTLLoader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
-        #debugInfo { position: fixed; top: 10px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 10px; z-index: 1000; }
-        canvas { width: 100% !important; height: 100% !important; object-fit: cover; }
+        #debugInfo {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
-<body>
-<div id="debugInfo"></div>
+<body style="margin: 0; overflow: hidden;">
+    <div id="debugInfo"></div>
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-marker preset="hiro">
+            <a-plane position="0 0 0" 
+                     rotation="-90 0 0" 
+                     width="1" 
+                     height="1" 
+                     color="#0000FF" 
+                     opacity="0.5"></a-plane>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
 
-<script>
-let scene, camera, renderer, arToolkitSource, arToolkitContext;
-let markerRoot, mesh, mesh0;
+    <script>
+        function updateDebugInfo() {
+            const marker = document.querySelector('a-marker');
+            const camera = document.querySelector('a-entity[camera]');
+            const debugInfo = document.getElementById('debugInfo');
 
-init();
-animate();
+            if (marker && camera) {
+                const markerPosition = marker.object3D.position;
+                const markerRotation = marker.object3D.rotation;
+                const cameraPosition = camera.object3D.position;
 
-function init() {
-    scene = new THREE.Scene();
+                debugInfo.innerHTML = `
+                    Marker Visible: ${marker.object3D.visible}<br>
+                    Marker Position: ${markerPosition.x.toFixed(2)}, ${markerPosition.y.toFixed(2)}, ${markerPosition.z.toFixed(2)}<br>
+                    Marker Rotation: ${markerRotation.x.toFixed(2)}, ${markerRotation.y.toFixed(2)}, ${markerRotation.z.toFixed(2)}<br>
+                    Camera Position: ${cameraPosition.x.toFixed(2)}, ${cameraPosition.y.toFixed(2)}, ${cameraPosition.z.toFixed(2)}
+                `;
+            }
 
-    camera = new THREE.Camera();
-    scene.add(camera);
+            requestAnimationFrame(updateDebugInfo);
+        }
 
-    renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true
-    });
-    renderer.setClearColor(new THREE.Color('lightgrey'), 0);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.domElement.style.position = 'absolute';
-    renderer.domElement.style.top = '0px';
-    renderer.domElement.style.left = '0px';
-    document.body.appendChild(renderer.domElement);
-
-    arToolkitSource = new THREEx.ArToolkitSource({
-        sourceType: 'webcam',
-    });
-
-    arToolkitSource.init(function onReady() {
-        onResize();
-    });
-
-    window.addEventListener('resize', onResize);
-
-    arToolkitContext = new THREEx.ArToolkitContext({
-        cameraParametersUrl: 'https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat',
-        detectionMode: 'mono',
-    });
-
-    arToolkitContext.init(function onCompleted() {
-        camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-    });
-
-    markerRoot = new THREE.Group();
-    scene.add(markerRoot);
-
-    let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
-        type: 'pattern',
-        patternUrl: 'https://raw.githack.com/AR-js-org/AR.js/master/data/data/patt.hiro',
-    });
-
-    // Create a blue square
-    let geometry = new THREE.PlaneBufferGeometry(1, 1);
-    let material = new THREE.MeshBasicMaterial({color: 0x0000ff, opacity: 0.5, transparent: true});
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.rotation.x = -Math.PI/2; // Rotate to lay flat on the marker
-    markerRoot.add(mesh);
-
-    // Load 3D model
-    new THREE.MTLLoader()
-        .setPath( 'model/' )
-        .load( 'site_skp1.mtl', function ( materials ) {
-            materials.preload();
-            new THREE.OBJLoader()
-                .setMaterials( materials )
-                .setPath( 'model/' )
-                .load( 'site_skp1.obj', function ( group ) {
-                    mesh0 = group.children[0];
-                    mesh0.material.side = THREE.DoubleSide;
-                    mesh0.position.y = 0.25;
-                    mesh0.scale.set(0.25, 0.25, 0.25);
-                    markerRoot.add(mesh0);
-                }, onProgress, onError );
-        });
-}
-
-function onProgress(xhr) { 
-    console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); 
-}
-
-function onError(xhr) { 
-    console.log( 'An error happened', xhr ); 
-}
-
-function onResize() {
-    arToolkitSource.onResizeElement();
-    arToolkitSource.copyElementSizeTo(renderer.domElement);
-    if (arToolkitContext.arController !== null) {
-        arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
-    }
-}
-
-function update() {
-    if (arToolkitSource.ready !== false) {
-        arToolkitContext.update(arToolkitSource.domElement);
-    }
-
-    // Update debug info
-    let debugInfo = document.getElementById('debugInfo');
-    debugInfo.innerHTML = `
-        AR Ready: ${arToolkitSource.ready}<br>
-        Marker Visible: ${markerRoot.visible}<br>
-        Marker Position: ${markerRoot.position.x.toFixed(2)}, ${markerRoot.position.y.toFixed(2)}, ${markerRoot.position.z.toFixed(2)}<br>
-        Marker Rotation: ${markerRoot.rotation.x.toFixed(2)}, ${markerRoot.rotation.y.toFixed(2)}, ${markerRoot.rotation.z.toFixed(2)}<br>
-        Camera Position: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}
-    `;
-}
-
-function animate() {
-    requestAnimationFrame(animate);
-    update();
-    renderer.render(scene, camera);
-}
-</script>
+        updateDebugInfo();
+    </script>
 </body>
 </html>
