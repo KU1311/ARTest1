@@ -22,14 +22,14 @@
 			width: 100%;
 			height: 100%;
 			overflow: hidden;
-			font-family: Monospace;
 		}
 		#cameraView {
 			position: absolute;
 			top: 0;
 			left: 0;
-			width: 100%;  /* Ensure full width */
+			width: 100%;
 			height: 100%; /* Ensure full height */
+			z-index: 1; /* Below the button */
 		}
 		.refresh-button {
 			position: fixed;
@@ -82,7 +82,7 @@ function initialize()
 		alpha: true
 	});
 	renderer.setClearColor(new THREE.Color('lightgrey'), 0);
-	renderer.setSize( window.innerWidth, window.innerHeight ); // Set to full screen
+	renderer.setSize(window.innerWidth, window.innerHeight); // Set to full screen
 	document.getElementById('cameraView').appendChild(renderer.domElement); // Append to the camera view div
 
 	clock = new THREE.Clock();
@@ -154,12 +154,12 @@ function initialize()
 	function onError(xhr) { console.log('An error happened'); }
 	
 	new THREE.MTLLoader()
-		.setPath('model/')
+		.setPath('models/')
 		.load('fish-2.mtl', function (materials) {
 			materials.preload();
 			new THREE.OBJLoader()
 				.setMaterials(materials)
-				.setPath('model/')
+				.setPath('models/')
 				.load('fish-2.obj', function (group) {
 					mesh0 = group.children[0];
 					mesh0.material.side = THREE.DoubleSide;
