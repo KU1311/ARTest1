@@ -27,12 +27,42 @@
 	padding: 10px;
 	text-align: center;
 }
+
+	.controls-container {
+            position: relative; /* To position dropdowns absolutely */
+            z-index: 10; /* Ensure dropdowns are above the map */
+        }
+
+        h2 {
+            margin-bottom: 10px; /* Space between title and dropdowns */
+            text-align: center; /* Center the title */
+            color: white; /* Change header text color for visibility */
+        }
+
+        .controls-container {
+	    position: relative; /* Allows for absolute positioning of dropdowns */
+	}
+	
+	.title-dropdown-container {
+	    display: flex;
+	    align-items: center; /* Center items vertically */
+	    justify-content: center; /* Center the title */
+	    width: 100%; /* Full width */
+	    padding: 10px; /* Padding around the container */
+	    box-sizing: border-box; /* Include padding in width */
+	    position: relative; /* Positioning context for absolute elements */
+	}
+	
 </style>
 
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
-<div id="title">
-	AR Application
-</div>
+    <div class="controls-container">
+        <div class="title-dropdown-container">
+	    <button class="back-button" onclick="window.history.back();">Back</button>
+            <h2 style="color: white; margin: 0;">方便泊車的洗手間位置</h2>
+        </div>  
+        
+    </div>
 <div id="sceneContainer">
 <button style="position: absolute; bottom: 20px; right: 20px;" onclick="location.reload()">
 Refresh
