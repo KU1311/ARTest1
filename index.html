@@ -167,9 +167,9 @@ function initialize()
 	})
 
 	// Load the models
-	loadModel('fish');
-	loadModel('tree');
-	loadModel('seats');
+	loadModel('fish-2');
+	loadModel('fish3');
+	loadModel('fish4');
 	loadModel('car');
 
 	// Function to load models based on the selection
@@ -200,7 +200,7 @@ function initialize()
 	// Add model toggles
 	const modelSelector = document.createElement('div');
 	modelSelector.className = 'model-selector';
-	const modelNames = ['fish', 'tree', 'seats', 'car'];
+	const modelNames = ['fish-2', 'fish3', 'fish4', 'car'];
 	modelNames.forEach(name => {
 		const label = document.createElement('label');
 		label.innerHTML = `
