@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<title>Hello, world!</title>
@@ -15,44 +14,14 @@
 	<script src="threex/threex-artoolkitcontext.js"></script>
 	<script src="threex/threex-arbasecontrols.js"></script>
 	<script src="threex/threex-armarkercontrols.js"></script>
-	<style>
-		html, body {
-			margin: 0;
-			padding: 0;
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
-		}
-		#cameraView {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%; /* Ensure full height */
-			z-index: 1; /* Below the button */
-		}
-		.refresh-button {
-			position: fixed;
-			bottom: 20px;
-			right: 20px;
-			background-color: #007BFF;
-			color: white;
-			border: none;
-			border-radius: 5px;
-			padding: 10px 15px;
-			font-size: 16px;
-			cursor: pointer;
-			z-index: 1000; /* Ensure it's on top */
-		}
-		.refresh-button:hover {
-			background-color: #0056b3;
-		}
-	</style>
 </head>
 
-<body>
+<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
 
-<div id="cameraView"></div> <!-- Div for the camera view -->
+<!-- 
+  Example created by Lee Stemkoski: https://github.com/stemkoski
+  Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
+-->
 
 <script>
 
@@ -81,9 +50,12 @@ function initialize()
 		antialias : true,
 		alpha: true
 	});
-	renderer.setClearColor(new THREE.Color('lightgrey'), 0);
-	renderer.setSize(window.innerWidth, window.innerHeight); // Set to full screen
-	document.getElementById('cameraView').appendChild(renderer.domElement); // Append to the camera view div
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+	renderer.setSize( 640, 480 );
+	renderer.domElement.style.position = 'absolute'
+	renderer.domElement.style.top = '0px'
+	renderer.domElement.style.left = '0px'
+	document.body.appendChild( renderer.domElement );
 
 	clock = new THREE.Clock();
 	deltaTime = 0;
@@ -99,37 +71,36 @@ function initialize()
 
 	function onResize()
 	{
-		arToolkitSource.onResize();	
-		arToolkitSource.copySizeTo(renderer.domElement);	
-		if (arToolkitContext.arController !== null)
+		arToolkitSource.onResize()	
+		arToolkitSource.copySizeTo(renderer.domElement)	
+		if ( arToolkitContext.arController !== null )
 		{
-			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);	
+			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
 		}	
 	}
 
 	arToolkitSource.init(function onReady(){
-		onResize();
+		onResize()
 	});
 	
 	// handle resize event
 	window.addEventListener('resize', function(){
-		onResize();
-		renderer.setSize(window.innerWidth, window.innerHeight); // Update renderer size
+		onResize()
 	});
 	
 	////////////////////////////////////////////////////////////
 	// setup arToolkitContext
 	////////////////////////////////////////////////////////////	
 
-	// create arToolkitContext
+	// create atToolkitContext
 	arToolkitContext = new THREEx.ArToolkitContext({
 		cameraParametersUrl: 'data/camera_para.dat',
 		detectionMode: 'mono'
 	});
 	
 	// copy projection matrix to camera when initialization complete
-	arToolkitContext.init(function onCompleted(){
-		camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+	arToolkitContext.init( function onCompleted(){
+		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
 	});
 
 	////////////////////////////////////////////////////////////
@@ -145,47 +116,46 @@ function initialize()
 
 	let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
 	let loader = new THREE.TextureLoader();
-	let material1 = new THREE.MeshBasicMaterial({ color: 0x0000ff, opacity: 0.5 });
-	mesh1 = new THREE.Mesh(geometry1, material1);
+	// let texture = loader.load( 'images/earth.jpg', render );
+	let material1 = new THREE.MeshBasicMaterial( { color: 0x0000ff, opacity: 0.5 } );
+	mesh1 = new THREE.Mesh( geometry1, material1 );
 	mesh1.rotation.x = -Math.PI/2;
-	markerRoot1.add(mesh1);
+	markerRoot1.add( mesh1 );
 	
-	function onProgress(xhr) { console.log((xhr.loaded / xhr.total * 100) + '% loaded'); }
-	function onError(xhr) { console.log('An error happened'); }
+	function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
+	function onError(xhr) { console.log( 'An error happened' ); }
 	
 	new THREE.MTLLoader()
-		.setPath('models/')
-		.load('fish-2.mtl', function (materials) {
+		.setPath( 'models/' )
+		.load( 'fish-2.mtl', function ( materials ) {
 			materials.preload();
 			new THREE.OBJLoader()
-				.setMaterials(materials)
-				.setPath('models/')
-				.load('fish-2.obj', function (group) {
+				.setMaterials( materials )
+				.setPath( 'models/' )
+				.load( 'fish-2.obj', function ( group ) {
 					mesh0 = group.children[0];
 					mesh0.material.side = THREE.DoubleSide;
 					mesh0.position.y = 0.25;
-					mesh0.scale.set(0.25, 0.25, 0.25);
+					mesh0.scale.set(0.25,0.25,0.25);
 					markerRoot1.add(mesh0);
-				}, onProgress, onError);
+				}, onProgress, onError );
 		});
 }
 
-// Function to refresh the AR view
-function refreshARView() {
-	location.reload(); // Reloads the page
-}
 
 function update()
 {
 	// update artoolkit on every frame
-	if (arToolkitSource.ready !== false)
-		arToolkitContext.update(arToolkitSource.domElement);
+	if ( arToolkitSource.ready !== false )
+		arToolkitContext.update( arToolkitSource.domElement );
 }
+
 
 function render()
 {
-	renderer.render(scene, camera);
+	renderer.render( scene, camera );
 }
+
 
 function animate()
 {
@@ -195,15 +165,6 @@ function animate()
 	update();
 	render();
 }
-
-// Refresh button event listener
-document.addEventListener('DOMContentLoaded', function() {
-	const button = document.createElement('button');
-	button.className = 'refresh-button';
-	button.innerText = 'Refresh';
-	button.onclick = refreshARView;
-	//document.body.appendChild(button); // Append the button to the body
-});
 
 </script>
 
