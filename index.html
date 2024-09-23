@@ -168,6 +168,15 @@ function initialize()
 		type: 'pattern', patternUrl: "data/hiro.patt",
 	})
 
+	// Create the blue square
+	const blueSquareGeometry = new THREE.PlaneGeometry(0.1, 0.1); // Adjust size as needed
+	const blueSquareMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF, side: THREE.DoubleSide });
+	const blueSquare = new THREE.Mesh(blueSquareGeometry, blueSquareMaterial);
+	
+	// Position the blue square above the marker
+	blueSquare.position.y = 0.05; // Adjust as necessary
+	markerRoot1.add(blueSquare); // Attach the blue square to the marker
+	
 	// Load the models
 	loadModel('fish-2');
 	loadModel('fish3');
