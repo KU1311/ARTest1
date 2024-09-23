@@ -57,12 +57,26 @@
 			border-radius: 5px;
 			padding: 10px;
 		}
+		.title {
+			position: fixed;
+			top: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: rgba(255, 255, 255, 0.8);
+			padding: 10px 20px;
+			border-radius: 5px;
+			font-size: 24px;
+			color: #333;
+			z-index: 1000; /* Ensure it's on top */
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+		}
 	</style>
 </head>
 
 <body>
 
 <div id="cameraView"></div> <!-- Div for the camera view -->
+<div class="title">Augmented Reality Model Viewer</div> <!-- Floating title -->
 
 <script>
 
@@ -153,13 +167,14 @@ function initialize()
 	})
 
 	// Load the models
-	loadModel('fish-2');
-	loadModel('fish3');
-	loadModel('fish4');
+	loadModel('fish');
+	loadModel('tree');
+	loadModel('seats');
+	loadModel('car');
 
 	// Function to load models based on the selection
 	function loadModel(modelName) {
-		const modelPath = `${modelName}.mtl`;
+		const modelPath = `models/${modelName}.mtl`;
 
 		new THREE.MTLLoader()
 			.setPath('models/')
@@ -185,7 +200,7 @@ function initialize()
 	// Add model toggles
 	const modelSelector = document.createElement('div');
 	modelSelector.className = 'model-selector';
-	const modelNames = ['fish-2', 'fish3', 'fish4'];
+	const modelNames = ['fish', 'tree', 'seats', 'car'];
 	modelNames.forEach(name => {
 		const label = document.createElement('label');
 		label.innerHTML = `
