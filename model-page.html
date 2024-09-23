@@ -39,11 +39,11 @@
 
         // Load model
         const mtlLoader = new THREE.MTLLoader();
-        mtlLoader.load('.models/fish-2.mtl', (materials) => {
+        mtlLoader.load('models/fish-2.mtl', (materials) => {
             materials.preload();
             const objLoader = new THREE.OBJLoader();
             objLoader.setMaterials(materials);
-            objLoader.load('.models/fish-2.obj', (object) => {
+            objLoader.load('models/fish-2.obj', (object) => {
                 scene.add(object);
             });
         });
