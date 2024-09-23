@@ -23,8 +23,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/MTLLoader.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
 <script>
-    let scene, camera, renderer;
+    let scene, camera, renderer, controls;
 
     function init() {
         // Create scene
@@ -35,7 +36,7 @@
         document.getElementById('canvas').appendChild(renderer.domElement);
 
         // Set camera position
-        camera.position.z = 5;
+        camera.position.set(0, 1, 5); // Adjusted for a better initial view
 
         // Load model
         const mtlLoader = new THREE.MTLLoader();
@@ -45,6 +46,12 @@
             objLoader.setMaterials(materials);
             objLoader.load('models/fish-2.obj', (object) => {
                 scene.add(object);
+                // Center the model
+                const box = new THREE.Box3().setFromObject(object);
+                const center = box.getCenter(new THREE.Vector3());
+                object.position.x -= center.x;
+                object.position.y -= center.y;
+                object.position.z -= center.z;
             });
         });
 
@@ -54,6 +61,12 @@
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
         directionalLight.position.set(0, 1, 1).normalize();
         scene.add(directionalLight);
+
+        // Initialize OrbitControls
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+        controls.dampingFactor = 0.25;
+        controls.enableZoom = true; // Allow zooming in and out
 
         // Handle window resize
         window.addEventListener('resize', onWindowResize, false);
@@ -70,8 +83,7 @@
 
     function animate() {
         requestAnimationFrame(animate);
-        // Add rotation to the model for better viewing experience
-        scene.rotation.y += 0.01;
+        controls.update(); // Only required if controls.enableDamping = true, or if controls.autoRotate = true
         renderer.render(scene, camera);
     }
 
