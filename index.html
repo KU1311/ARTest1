@@ -172,8 +172,6 @@ function initialize()
 	loadModel('fish-2');
 	loadModel('fish3');
 	loadModel('fish4');
-	loadModel('car');
-
 	// Function to load models based on the selection
 	function loadModel(modelName) {
 		const modelPath = `${modelName}.mtl`;
@@ -202,7 +200,7 @@ function initialize()
 	// Add model toggles
 	const modelSelector = document.createElement('div');
 	modelSelector.className = 'model-selector';
-	const modelNames = ['fish-2', 'fish3', 'fish4', 'car'];
+	const modelNames = ['fish-2', 'fish3', 'fish4'];
 	modelNames.forEach(name => {
 		const label = document.createElement('label');
 		label.innerHTML = `
