@@ -81,12 +81,8 @@ function initialize()
 		antialias : true,
 		alpha: true
 	});
-	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-	renderer.setSize( 640, 480 );
-	renderer.domElement.style.position = 'absolute'
-	renderer.domElement.style.top = '0px'
-	renderer.domElement.style.left = '0px'
-	document.body.appendChild( renderer.domElement );
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0);
+	renderer.setSize(window.innerWidth, window.innerHeight); // Set to full screen
 	document.getElementById('cameraView').appendChild(renderer.domElement); // Append to the camera view div
 
 	clock = new THREE.Clock();
@@ -158,12 +154,12 @@ function initialize()
 	function onError(xhr) { console.log('An error happened'); }
 	
 	new THREE.MTLLoader()
-		.setPath('model/')
+		.setPath('models/')
 		.load('fish-2.mtl', function (materials) {
 			materials.preload();
 			new THREE.OBJLoader()
 				.setMaterials(materials)
-				.setPath('model/')
+				.setPath('models/')
 				.load('fish-2.obj', function (group) {
 					mesh0 = group.children[0];
 					mesh0.material.side = THREE.DoubleSide;
