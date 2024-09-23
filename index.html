@@ -7,7 +7,7 @@
 	<script src='js/three.js'></script>
 	<script src='js/OBJLoader.js'></script>
 	<script src='js/MTLLoader.js'></script>
-	<!-- include jsartookit -->
+	<!-- include jsartoolkit -->
 	<script src="jsartoolkit5/artoolkit.min.js"></script>
 	<script src="jsartoolkit5/artoolkit.api.js"></script>
 	<!-- include threex.artoolkit -->
@@ -47,6 +47,16 @@
 		.refresh-button:hover {
 			background-color: #0056b3;
 		}
+		.model-selector {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			z-index: 1000; /* Ensure it's on top */
+			background-color: white;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 10px;
+		}
 	</style>
 </head>
 
@@ -61,8 +71,7 @@ var scene, camera, renderer, clock, deltaTime, totalTime;
 var arToolkitSource, arToolkitContext;
 
 var markerRoot1;
-
-var mesh1;
+var models = {}; // Object to hold model references
 
 initialize();
 animate();
@@ -143,31 +152,53 @@ function initialize()
 		type: 'pattern', patternUrl: "data/hiro.patt",
 	})
 
-	let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-	let loader = new THREE.TextureLoader();
-	let material1 = new THREE.MeshBasicMaterial({ color: 0x0000ff, opacity: 0.5 });
-	mesh1 = new THREE.Mesh(geometry1, material1);
-	mesh1.rotation.x = -Math.PI/2;
-	markerRoot1.add(mesh1);
-	
+	// Load the models
+	loadModel('fish-2');
+	loadModel('fish3');
+	loadModel('fish4');
+
+	// Function to load models based on the selection
+	function loadModel(modelName) {
+		const modelPath = `models/${modelName}.mtl`;
+
+		new THREE.MTLLoader()
+			.setPath('models/')
+			.load(modelPath, function (materials) {
+				materials.preload();
+				new THREE.OBJLoader()
+					.setMaterials(materials)
+					.setPath('models/')
+					.load(`${modelName}.obj`, function (group) {
+						models[modelName] = group.children[0];
+						models[modelName].material.side = THREE.DoubleSide;
+						models[modelName].position.y = 0.25;
+						models[modelName].scale.set(0.25, 0.25, 0.25);
+						models[modelName].visible = false; // Initially hide the model
+						markerRoot1.add(models[modelName]);
+					}, onProgress, onError);
+			});
+	}
+
 	function onProgress(xhr) { console.log((xhr.loaded / xhr.total * 100) + '% loaded'); }
 	function onError(xhr) { console.log('An error happened'); }
-	
-	new THREE.MTLLoader()
-		.setPath('models/')
-		.load('fish-2.mtl', function (materials) {
-			materials.preload();
-			new THREE.OBJLoader()
-				.setMaterials(materials)
-				.setPath('models/')
-				.load('fish-2.obj', function (group) {
-					mesh0 = group.children[0];
-					mesh0.material.side = THREE.DoubleSide;
-					mesh0.position.y = 0.25;
-					mesh0.scale.set(0.25, 0.25, 0.25);
-					markerRoot1.add(mesh0);
-				}, onProgress, onError);
+
+	// Add model toggles
+	const modelSelector = document.createElement('div');
+	modelSelector.className = 'model-selector';
+	const modelNames = ['fish-2', 'fish3', 'fish4'];
+	modelNames.forEach(name => {
+		const label = document.createElement('label');
+		label.innerHTML = `
+			<input type="checkbox" id="${name}-toggle"> ${name.charAt(0).toUpperCase() + name.slice(1)}
+		`;
+		label.style.display = 'block';
+		label.style.margin = '5px 0';
+		label.querySelector('input').addEventListener('change', function() {
+			models[name].visible = this.checked; // Show or hide the model based on the checkbox
 		});
+		modelSelector.appendChild(label);
+	});
+	document.body.appendChild(modelSelector); // Append the toggles to the body
 }
 
 // Function to refresh the AR view
