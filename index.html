@@ -159,7 +159,7 @@ function initialize()
 
 	// Function to load models based on the selection
 	function loadModel(modelName) {
-		const modelPath = `models/${modelName}.mtl`;
+		const modelPath = `${modelName}.mtl`;
 
 		new THREE.MTLLoader()
 			.setPath('models/')
