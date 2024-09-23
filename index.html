@@ -187,7 +187,7 @@ function initialize()
 						models[modelName] = group.children[0];
 						models[modelName].material.side = THREE.DoubleSide;
 						models[modelName].position.y = 0.25;
-						models[modelName].scale.set(0.25, 0.25, 0.25);
+						models[modelName].scale.set(1, 1, 1);
 						models[modelName].visible = false; // Initially hide the model
 						markerRoot1.add(models[modelName]);
 					}, onProgress, onError);
