@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>油麻地健康步行徑體驗日 - AR體驗</title>
+    <title>Healthy Walking Trail Experience Day</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,30 +29,40 @@
         button:hover {
             background-color: #45a049;
         }
-        .input-field {
-            margin: 10px 0;
+        #cameraView {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/three.js/three.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/THREEx/threex-artoolkit.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
 </head>
 <body>
 
 <div id="welcome" class="container">
-    <h1>油麻地健康步行徑體驗日 - AR體驗</h1>
-    <p>擴闊行人路後，你有什麼想像呢？</p>
-    <button onclick="showLocationPrompt()">開始</button>
+    <h1>Healthy Walking Trail Experience Day</h1>
+    <p>Explore our future pedestrian path and share your ideas!</p>
+    <button onclick="showLocationPrompt()">Get Started</button>
 </div>
 
 <div id="locationPrompt" class="container hidden">
-    <p>Please allow access to your location.</p>
+    <p>To create a personalized experience, please allow access to your location.</p>
     <button onclick="requestLocation()">Allow</button>
     <button onclick="denyLocation()">Deny</button>
 </div>
 
 <div id="arExperience" class="container hidden">
     <h2>AR Visualization</h2>
-    <p>把鏡頭指向標示</p>
-    <button onclick="enterARMode()">進入AR模式</button>
-    <div id="arCanvas"></div>
+    <p>Point your camera at the road to see the transformation!</p>
+    <button onclick="enterARMode()">Enter AR Mode</button>
+    <div id="cameraView"></div>
 </div>
 
 <div id="interactiveElements" class="container hidden">
@@ -78,13 +88,16 @@
 </div>
 
 <script>
+    let scene, camera, renderer, arToolkitSource, arToolkitContext;
+    let markerRoot1;
+    let addedElements = [];
+
     function showLocationPrompt() {
         document.getElementById('welcome').classList.add('hidden');
         document.getElementById('locationPrompt').classList.remove('hidden');
     }
 
     function requestLocation() {
-        // Simulated location access
         document.getElementById('locationPrompt').classList.add('hidden');
         document.getElementById('arExperience').classList.remove('hidden');
     }
@@ -96,17 +109,98 @@
     }
 
     function enterARMode() {
-        // Placeholder for AR mode functionality
-        alert("AR Mode Activated! (This requires AR library implementation)");
+        initialize();
         document.getElementById('interactiveElements').classList.remove('hidden');
     }
 
+    function initialize() {
+        scene = new THREE.Scene();
+        let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
+        scene.add(ambientLight);
+        camera = new THREE.Camera();
+        scene.add(camera);
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setClearColor(new THREE.Color('lightgrey'), 0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('cameraView').appendChild(renderer.domElement);
+
+        // Setup arToolkitSource
+        arToolkitSource = new THREEx.ArToolkitSource({ sourceType: 'webcam' });
+
+        function onResize() {
+            arToolkitSource.onResize();
+            arToolkitSource.copySizeTo(renderer.domElement);
+            if (arToolkitContext.arController !== null) {
+                arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
+            }
+        }
+
+        arToolkitSource.init(() => { onResize(); });
+
+        // Handle resize event
+        window.addEventListener('resize', () => {
+            onResize();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Setup arToolkitContext
+        arToolkitContext = new THREEx.ArToolkitContext({
+            cameraParametersUrl: 'data/camera_para.dat',
+            detectionMode: 'mono'
+        });
+
+        arToolkitContext.init(() => {
+            camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+        });
+
+        // Setup markerRoots
+        markerRoot1 = new THREE.Group();
+        scene.add(markerRoot1);
+        let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+            type: 'pattern', patternUrl: "data/hiro.patt",
+        });
+
+        // Load the base model
+        loadModel('site.obj', markerRoot1);
+    }
+
+    function loadModel(url, parent) {
+        const loader = new THREE.OBJLoader();
+        loader.load(url, (object) => {
+            parent.add(object);
+            // If the model has materials, they can be applied here
+            object.traverse((child) => {
+                if (child.isMesh) {
+                    child.material = new THREE.MeshNormalMaterial(); // Replace with actual material
+                }
+            });
+        }, undefined, (error) => {
+            console.error('An error happened while loading the model:', error);
+        });
+    }
+
     function addElement(type) {
-        alert(type.charAt(0).toUpperCase() + type.slice(1) + " added to the path! (This requires AR integration)");
+        let modelUrl = '';
+        if (type === 'bench') {
+            modelUrl = 'bench.obj';
+        } else if (type === 'tree') {
+            modelUrl = 'tree.obj';
+        }
+
+        if (modelUrl) {
+            loadModel(modelUrl, markerRoot1);
+            addedElements.push(type); // Keep track of added elements
+        }
     }
 
     function removeElement() {
-        alert("Last element removed! (This requires AR integration)");
+        if (addedElements.length > 0) {
+            // Logic to remove the last added element
+            addedElements.pop();
+            alert("Last element removed! (Requires AR integration for actual removal)");
+        } else {
+            alert("No elements to remove.");
+        }
     }
 
     function submitIdeas() {
@@ -124,6 +218,17 @@
         document.getElementById('thankYou').classList.add('hidden');
         document.getElementById('welcome').classList.remove('hidden');
     }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if (arToolkitSource.ready) {
+            arToolkitContext.update(arToolkitSource.domElement);
+            renderer.render(scene, camera);
+        }
+    }
+
+    animate(); // Start the animation loop
+
 </script>
 
 </body>
