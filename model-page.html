@@ -60,7 +60,8 @@
         document.getElementById('canvas').appendChild(renderer.domElement);
 
         // Set camera position
-        camera.position.set(0, -1, 5);
+        camera.position.set(0, 1, 10);
+        camera.rotation.y = Math.PI; // Rotate 180 degrees (in radians)
 
         // Load models and store them in the models object
         loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
