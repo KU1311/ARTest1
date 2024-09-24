@@ -8,17 +8,38 @@
         body {
             margin: 0;
             overflow: hidden;
+            display: flex;
         }
         #canvas {
-            width: 100%;
+            width: 80%;
             height: 100vh;
             display: block;
+        }
+        #controls {
+            width: 20%;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+        h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        label {
+            display: block;
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
 
 <div id="canvas"></div>
+<div id="controls">
+    <h2>Select Models to Display</h2>
+    <label><input type="checkbox" id="baseCheckbox" checked> Base Model</label>
+    <label><input type="checkbox" id="newRoadCheckbox" checked> New Road</label>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
@@ -26,6 +47,7 @@
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
 <script>
     let scene, camera, renderer, controls;
+    let models = {};
 
     function init() {
         // Create scene
@@ -36,24 +58,11 @@
         document.getElementById('canvas').appendChild(renderer.domElement);
 
         // Set camera position
-        camera.position.set(0, 1, 5); // Adjusted for a better initial view
+        camera.position.set(0, 1, 5);
 
-        // Load model
-        const mtlLoader = new THREE.MTLLoader();
-        mtlLoader.load('models/fish-2.mtl', (materials) => {
-            materials.preload();
-            const objLoader = new THREE.OBJLoader();
-            objLoader.setMaterials(materials);
-            objLoader.load('models/fish-2.obj', (object) => {
-                scene.add(object);
-                // Center the model
-                const box = new THREE.Box3().setFromObject(object);
-                const center = box.getCenter(new THREE.Vector3());
-                object.position.x -= center.x;
-                object.position.y -= center.y;
-                object.position.z -= center.z;
-            });
-        });
+        // Load models and store them in the models object
+        loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
+        loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
 
         // Add lighting
         const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
@@ -64,15 +73,43 @@
 
         // Initialize OrbitControls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+        controls.enableDamping = true;
         controls.dampingFactor = 0.25;
-        controls.enableZoom = true; // Allow zooming in and out
+        controls.enableZoom = true;
+
+        // Add event listeners for checkbox changes
+        document.getElementById('baseCheckbox').addEventListener('change', function () {
+            toggleModelVisibility('baseModel', this.checked);
+        });
+        document.getElementById('newRoadCheckbox').addEventListener('change', function () {
+            toggleModelVisibility('newRoadModel', this.checked);
+        });
 
         // Handle window resize
         window.addEventListener('resize', onWindowResize, false);
 
         // Start animation loop
         animate();
+    }
+
+    function loadModel(mtlPath, objPath, modelName, visible) {
+        const mtlLoader = new THREE.MTLLoader();
+        mtlLoader.load(mtlPath, (materials) => {
+            materials.preload();
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.load(objPath, (object) => {
+                models[modelName] = object;
+                object.visible = visible; // Set initial visibility based on checkbox
+                scene.add(object);
+            });
+        });
+    }
+
+    function toggleModelVisibility(modelName, isVisible) {
+        if (models[modelName]) {
+            models[modelName].visible = isVisible;
+        }
     }
 
     function onWindowResize() {
@@ -83,7 +120,7 @@
 
     function animate() {
         requestAnimationFrame(animate);
-        controls.update(); // Only required if controls.enableDamping = true, or if controls.autoRotate = true
+        controls.update();
         renderer.render(scene, camera);
     }
 
