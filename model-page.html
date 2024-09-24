@@ -68,9 +68,6 @@
         const ambientLight = new THREE.AmbientLight(0xffffff, 1); // White light with full intensity
         scene.add(ambientLight);
 
-        // Add hemispherical light for better detail visibility
-        const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1); // Sky color, ground color, intensity
-        scene.add(hemisphereLight);
         
         // Initialize OrbitControls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
