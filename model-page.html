@@ -39,6 +39,8 @@
     <h2>Select Models to Display</h2>
     <label><input type="checkbox" id="baseCheckbox" checked> Base Model</label>
     <label><input type="checkbox" id="newRoadCheckbox" checked> New Road</label>
+    <label><input type="checkbox" id="parkingCheckbox" checked> Parking</label>
+    <label><input type="checkbox" id="bushesCheckbox" checked> Bushes</label>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -63,8 +65,8 @@
         // Load models and store them in the models object
         loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
         loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-        loadModel('models/parking.mtl', 'models/parking.obj', 'Parking', true);
-        loadModel('models/bushes.mtl', 'models/bushes.obj', 'Bushes', true);
+        loadModel('models/parking.mtl', 'models/parking.obj', 'parkingModel', true);
+        loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
 
         // Add lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
@@ -86,6 +88,12 @@
         });
         document.getElementById('newRoadCheckbox').addEventListener('change', function () {
             toggleModelVisibility('newRoadModel', this.checked);
+        });
+        document.getElementById('parkingCheckbox').addEventListener('change', function () {
+            toggleModelVisibility('parkingModel', this.checked);
+        });
+        document.getElementById('bushesCheckbox').addEventListener('change', function () {
+            toggleModelVisibility('bushesModel', this.checked);
         });
 
         // Handle window resize
