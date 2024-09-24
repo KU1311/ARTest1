@@ -65,11 +65,11 @@
         loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
 
         // Add lighting
-        const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(0, 1, 1).normalize();
-        scene.add(directionalLight);
+        //const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+        //scene.add(ambientLight);
+        //const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        //directionalLight.position.set(0, 1, 1).normalize();
+        //scene.add(directionalLight);
 
         // Initialize OrbitControls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
