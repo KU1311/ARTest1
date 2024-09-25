@@ -60,11 +60,11 @@
         document.getElementById('canvas').appendChild(renderer.domElement);
 
         // Set camera position
-        camera.position.set(0, 1, -10);
+        camera.position.set(5, 5, -10);
         //camera.rotation.y = Math.PI; 
 
-         // Make the camera look at the origin (10, 0, 0)
-        camera.lookAt(0, 0, 0);
+         // Make the camera look at the origin
+        camera.lookAt(5, 1, 0);
         
         // Load models and store them in the models object
         loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
