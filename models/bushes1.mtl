@@ -16,7 +16,7 @@ newmtl wall_brick
 Ka 0.000000 0.000000 0.000000
 Kd 0.705882 0.705882 0.725490
 Ks 0.330000 0.330000 0.330000
-map_Kd bushes1/wall_brick.png
+map_Kd bushes/wall_brick.png
 
 newmtl Lisanne_Hair
 Ka 0.000000 0.000000 0.000000
