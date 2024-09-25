@@ -60,6 +60,37 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas').appendChild(renderer.domElement);
 
+        // Set the background color (light blue for sky, gray for ground)
+        const skyColor = new THREE.Color(0x87CEEB); // Light blue
+        const groundColor = new THREE.Color(0xA9A9A9); // Gray
+        
+        // Create a gradient effect
+        const gradientTexture = createGradientTexture(skyColor, groundColor);
+        scene.background = gradientTexture;
+        
+        // Function to create a gradient texture
+        function createGradientTexture(skyColor, groundColor) {
+            const size = 512; // Texture size
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            
+            const context = canvas.getContext('2d');
+            
+            // Create gradient
+            const gradient = context.createLinearGradient(0, 0, 0, size);
+            gradient.addColorStop(0, skyColor.getStyle()); // Sky color
+            gradient.addColorStop(1, groundColor.getStyle()); // Ground color
+        
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, size, size);
+            
+            // Create texture from canvas
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true; // Update texture
+            return texture;
+        }
+        
         // Set camera position
         camera.position.set(-5, 5, -10);
         //camera.rotation.y = Math.PI; 
