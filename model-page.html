@@ -72,9 +72,7 @@
         loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
         loadModel('models/parking.mtl', 'models/parking.obj', 'parkingModel', true);
         loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
-        loadModel('models/trees1.mtl', 'models/trees1.obj', 'treesModel1', true);
-        loadModel('models/trees2.mtl', 'models/trees2.obj', 'treesModel2', true);
-        loadModel('models/trees3.mtl', 'models/trees3.obj', 'treesModel3', true);
+        loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
         
         // Add lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
@@ -104,9 +102,7 @@
             toggleModelVisibility('bushesModel', this.checked);
         });
         document.getElementById('treesCheckbox').addEventListener('change', function () {
-            toggleModelVisibility('treesModel1', this.checked);
-            toggleModelVisibility('treesModel2', this.checked);
-            toggleModelVisibility('treesModel3', this.checked);
+            toggleModelVisibility('treesModel', this.checked);
         });
 
         // Handle window resize
