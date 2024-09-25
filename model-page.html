@@ -63,6 +63,9 @@
         camera.position.set(0, 1, 10);
         //camera.rotation.y = Math.PI; 
 
+         // Make the camera look at the origin (0, 0, 0)
+        camera.lookAt(0, 0, 0);
+        
         // Load models and store them in the models object
         loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
         loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
