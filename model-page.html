@@ -37,10 +37,9 @@
 <div id="canvas"></div>
 <div id="controls">
     <h2>Select Models to Display</h2>
-    <label><input type="checkbox" id="baseCheckbox" checked> Base Model</label>
     <label><input type="checkbox" id="newRoadCheckbox" checked> New Road</label>
     <label><input type="checkbox" id="parkingCheckbox" checked> Parking</label>
-    <label><input type="checkbox" id="bushesCheckbox" checked> Bushes</label>
+    <label><input type="checkbox" id="option1_Checkbox" checked> Seatings, Bushes and Trees</label>
     <label><input type="checkbox" id="treesCheckbox" checked> Trees</label>
 </div>
 
@@ -159,6 +158,8 @@
         loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
         loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
         loadModel('models/signs.mtl', 'models/signs.obj', 'signsModel', true);
+        loadModel('models/seats1.mtl', 'models/seats1.obj', 'seats1Model1', true);
+        loadModel('models/bushes1.mtl', 'models/bushes1.obj', 'bushesModel1', true);
         
         // Add lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
@@ -198,8 +199,12 @@
         document.getElementById('parkingCheckbox').addEventListener('change', function () {
             toggleModelVisibility('parkingModel', this.checked);
         });
-        document.getElementById('bushesCheckbox').addEventListener('change', function () {
+        document.getElementById('option1_Checkbox').addEventListener('change', function () {
+            toggleModelVisibility('newRoadModel', this.checked);
             toggleModelVisibility('bushesModel', this.checked);
+            toggleModelVisibility('bushesModel1', this.checked);
+            toggleModelVisibility('treesModel', this.checked);
+            toggleModelVisibility('seatsModel1', this.checked);
         });
         document.getElementById('treesCheckbox').addEventListener('change', function () {
             toggleModelVisibility('treesModel', this.checked);
