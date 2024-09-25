@@ -2,9 +2,9 @@
 ## Alias OBJ Material File
 # Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
 
-newmtl Lisanne_Tool_Bag_03
+newmtl Lisanne_Hair
 Ka 0.000000 0.000000 0.000000
-Kd 0.239216 0.364706 0.149020
+Kd 0.462745 0.313725 0.227451
 Ks 0.330000 0.330000 0.330000
 
 newmtl _13
