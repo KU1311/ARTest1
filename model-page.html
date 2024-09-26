@@ -133,8 +133,9 @@
                 });
                 models[modelName] = object;
                 console.log(`Model ${modelName} loaded`); // Debugging statement
-                if (addToScene) {
-                    scene.add(object);
+                scene.add(object);
+                if addToScene==false {
+                    object.visible = false;
                 }
             }, undefined, (error) => {
                 console.error(`Failed to load model ${modelName}:`, error);
