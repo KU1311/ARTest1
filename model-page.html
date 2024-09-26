@@ -119,7 +119,7 @@
     function loadModel(mtlPath, objPath, modelName, addToScene = false) {
         const mtlLoader = new THREE.MTLLoader();
         const objLoader = new THREE.OBJLoader();
-    
+
         mtlLoader.load(mtlPath, (materials) => {
             materials.preload();
     
@@ -132,6 +132,7 @@
                     }
                 });
                 models[modelName] = object;
+                console.log(`Model ${modelName} loaded`); // Debugging statement
                 if (addToScene) {
                     scene.add(object);
                 }
@@ -144,77 +145,48 @@
     }
 
     // Function to load all models at once
-
     async function loadAllModels() {
-    
-    await loadModel('models/base.mtl', 'models/base.obj', 'base');
-    
-    await loadModel('models/signs.mtl', 'models/signs.obj', 'signs');
-    
-    await loadModel('models/cars.mtl', 'models/cars.obj', 'cars');
-    
-    await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad');
-    
-    await loadModel('models/parking.mtl', 'models/parking.obj', 'parking');
-    
-    await loadModel('models/seats.mtl', 'models/seats.obj', 'seats');
-    
-    await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2');
-    
-    await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes');
-    
-    await loadModel('models/trees.mtl', 'models/trees.obj', 'trees');
-    
-    // Add the base model to the scene
-    
-    scene.add(models['base']);
-    
-    scene.add(models['signs']);
-    
-    scene.add(models['cars']);
-    
+        await loadModel('models/base.mtl', 'models/base.obj', 'base', true);
+        await loadModel('models/signs.mtl', 'models/signs.obj', 'signs', true);
+        await loadModel('models/cars.mtl', 'models/cars.obj', 'cars', true);
+        await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad');
+        await loadModel('models/parking.mtl', 'models/parking.obj', 'parking');
+        await loadModel('models/seats.mtl', 'models/seats.obj', 'seats');
+        await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2');
+        await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes');
+        await loadModel('models/trees.mtl', 'models/trees.obj', 'trees');
     }
     
     // Define which models to display for each dropdown option
-    
     const modelVisibilityMap = {
-    
-    newRoad: ['newRoad'],
-    
-    parking: ['parking','bushes'],
-    
-    parking_trees: ['parking','bushes','trees'],
-    
-    parking_seats: ['parking','seats2'],
-    
-    seatings: ['seats', 'bushes'],
-    
-    seatings_trees: ['seats', 'bushes','trees'],
-    
-    trees: ['trees'],
-    
-    none: []
-    
+        newRoad: ['newRoad'],
+        parking: ['parking', 'bushes'],
+        parking_trees: ['parking', 'bushes', 'trees'],
+        parking_seats: ['parking', 'seats2'],
+        seatings: ['seats', 'bushes'],
+        seatings_trees: ['seats', 'bushes', 'trees'],
+        trees: ['trees'],
+        none: []
     };
     
     // Function to toggle model visibility based on selection
     function toggleModelVisibility(selectedModel) {
         // Set all models to invisible first
         for (let modelName in models) {
-            if (models[modelName]) { // Check if model exists
+            if (models[modelName]) {
                 models[modelName].visible = false; // Hide all models
             }
         }
-    
+
         // Always show the base model
         if (models['base']) {
             models['base'].visible = true; 
         }
-    
+
         // Show the selected model(s) along with the base model
         const modelsToShow = modelVisibilityMap[selectedModel] || [];
         modelsToShow.forEach((model) => {
-            if (models[model]) { // Check if model exists before trying to set visibility
+            if (models[model]) {
                 models[model].visible = true; // Show selected models
             } else {
                 console.warn(`Model ${model} does not exist in models.`);
@@ -226,24 +198,24 @@
     loadAllModels().then(() => {
         // Set up the initial camera position
         camera.position.z = 5;
-    
+
         // Set up the dropdown event listener
         const modelSelect = document.getElementById('modelSelect');
         modelSelect.addEventListener('change', (event) => {
             const selectedModel = event.target.value;
             toggleModelVisibility(selectedModel); // Toggle visibility based on selection
         });
-    
+
         // Initial visibility setup
         toggleModelVisibility('none'); // Hide all additional models initially
-    
+
         // Render loop
         function animate() {
             requestAnimationFrame(animate);
             controls.update(); // Update controls for damping effect
             renderer.render(scene, camera);
         }
-    
+
         // Start the animation loop
         animate();
     }).catch(error => {
