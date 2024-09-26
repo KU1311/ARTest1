@@ -36,11 +36,17 @@
 
 <div id="canvas"></div>
 <div id="controls">
-    <h2>Select Models to Display</h2>
-    <label><input type="checkbox" id="newRoadCheckbox" checked> New Road</label>
-    <label><input type="checkbox" id="parkingCheckbox" checked> Parking</label>
-    <label><input type="checkbox" id="option1_Checkbox" checked> Seatings, Bushes and Trees</label>
-    <label><input type="checkbox" id="treesCheckbox" checked> Trees</label>
+    <h2>3D模型</h2>
+    <label for="modelSelect">請選擇模型:</label>
+    <select id="modelSelect">
+        <option value="newRoad" selected>擴闊行人路, 不另設設施</option>
+        <option value="parking" selected>泊車位和花槽</option>
+        <option value="parking with tree" selected>泊車位, 花槽, 樹</option>
+        <option value="seatings" selected>座椅和花槽</option>
+        <option value="seatings with tree" selected>座椅, 花槽, 樹</option>
+        <option value="trees" selected>樹</option>
+        <option value="trees with bushes" selected>花槽和樹</option>
+    </select>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -48,12 +54,8 @@
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/MTLLoader.js"></script>
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
 <script>
-    let scene, camera, renderer, controls;
-    let models = {};
-
-    function init() {
-        // Create scene
-        scene = new THREE.Scene();
+    // Initialize your scene, camera, and renderer here
+    scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -96,157 +98,132 @@
 
          // Make the camera look at the origin
         camera.lookAt(-100, -50, -50);
-
-        // Function to load models and adjust their materials
-        const loadModel = (mtlPath, objPath, modelName, addToScene) => {
-            const mtlLoader = new THREE.MTLLoader();
-            const objLoader = new THREE.OBJLoader();
-        
-            // Load the material file
-            mtlLoader.load(mtlPath, (materials) => {
-                materials.preload(); // Preload materials
-        
-                // Load the OBJ file
-                objLoader.setMaterials(materials);
-                objLoader.load(objPath, (object) => {
-                    // Traverse through all children of the loaded object
-                    object.traverse((child) => {
-                        if (child.isMesh) {
-                            // Adjust material properties to make it matte
-                            if (child.material) {
-                                if (Array.isArray(child.material)) {
-                                    // Handle multiple materials
-                                    child.material.forEach((material) => {
-                                        if (material.isMeshStandardMaterial) {
-                                            material.roughness = 1; // High roughness for matte finish
-                                            material.metalness = 0; // No metallic reflection
-                                        } else if (material.isMeshPhongMaterial) {
-                                            material.shininess = 0; // Set shininess to 0 for matte finish
-                                        }
-                                    });
-                                } else {
-                                    // Single material case
-                                    if (child.material.isMeshStandardMaterial) {
-                                        child.material.roughness = 1;
-                                        child.material.metalness = 0;
-                                    } else if (child.material.isMeshPhongMaterial) {
-                                        child.material.shininess = 0;
-                                    }
-                                }
-                            }
-        
-                            // Enable shadows
-                            child.castShadow = true; // Enable casting shadows
-                            child.receiveShadow = true; // Enable receiving shadows
-                        }
-                    });
-        
-                    // Optionally set the name or add the object to a models object
-                    if (addToScene) {
-                        scene.add(object);
-                    }
-                    // Store the model in a global models object if needed
-                    models[modelName] = object; 
-                });
-            });
-        };
-        
-        // Load models and store them in the models object
-        loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
-        loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-        loadModel('models/parking.mtl', 'models/parking.obj', 'parkingModel', true);
-        loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
-        loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
-        loadModel('models/signs.mtl', 'models/signs.obj', 'signsModel', true);
-        loadModel('models/seats1.mtl', 'models/seats1.obj', 'seatsModel1', true);
-        loadModel('models/bushes1.mtl', 'models/bushes1.obj', 'bushesModel1', true);
-        
-        // Add lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-        scene.add(ambientLight);
-        
-        // Add Directional Light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(10, 10, 10); // Adjust position as needed
-        directionalLight.castShadow = true; // Enable shadows
-        
-        // Set up shadow properties
-        directionalLight.shadow.mapSize.width = 1024; // Default
-        directionalLight.shadow.mapSize.height = 1024; // Default
-        directionalLight.shadow.camera.near = 0.5; // Default
-        directionalLight.shadow.camera.far = 50; // Default
-        directionalLight.shadow.camera.left = -10; // Adjust as needed
-        directionalLight.shadow.camera.right = 10; // Adjust as needed
-        directionalLight.shadow.camera.top = 10; // Adjust as needed
-        directionalLight.shadow.camera.bottom = -10; // Adjust as needed
-        
-        scene.add(directionalLight);
-
-        
-        // Initialize OrbitControls
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-        controls.enableZoom = true;
-
-        // Add event listeners for checkbox changes
-        //document.getElementById('baseCheckbox').addEventListener('change', function () {
-        //    toggleModelVisibility('baseModel', this.checked);
-        //});
-        document.getElementById('newRoadCheckbox').addEventListener('change', function () {
-            toggleModelVisibility('newRoadModel', this.checked);
-        });
-        document.getElementById('parkingCheckbox').addEventListener('change', function () {
-            toggleModelVisibility('parkingModel', this.checked);
-        });
-        document.getElementById('option1_Checkbox').addEventListener('change', function () {
-            toggleModelVisibility('bushesModel', this.checked);
-            toggleModelVisibility('bushesModel1', this.checked);
-            toggleModelVisibility('treesModel', this.checked);
-            toggleModelVisibility('seatsModel1', this.checked);
-        });
-        document.getElementById('treesCheckbox').addEventListener('change', function () {
-            toggleModelVisibility('treesModel', this.checked);
-        });
-
-        // Handle window resize
-        window.addEventListener('resize', onWindowResize, false);
-
-        // Start animation loop
-        animate();
-    }
-
-    function loadModel(mtlPath, objPath, modelName, visible) {
+    
+    // Global variable to store loaded models
+    let models = {};
+    
+    // Function to load models
+    function loadModel(mtlPath, objPath, modelName, addToScene) {
         const mtlLoader = new THREE.MTLLoader();
+        const objLoader = new THREE.OBJLoader();
+    
         mtlLoader.load(mtlPath, (materials) => {
-            materials.preload();
-            const objLoader = new THREE.OBJLoader();
+            materials.preload(); // Preload materials
+    
             objLoader.setMaterials(materials);
             objLoader.load(objPath, (object) => {
+                // Traverse through all children of the loaded object
+                object.traverse((child) => {
+                    if (child.isMesh) {
+                        // Adjust material properties to make it matte
+                        if (child.material) {
+                            if (Array.isArray(child.material)) {
+                                child.material.forEach((material) => {
+                                    if (material.isMeshStandardMaterial) {
+                                        material.roughness = 1;
+                                        material.metalness = 0;
+                                    } else if (material.isMeshPhongMaterial) {
+                                        material.shininess = 0;
+                                    }
+                                });
+                            } else {
+                                if (child.material.isMeshStandardMaterial) {
+                                    child.material.roughness = 1;
+                                    child.material.metalness = 0;
+                                } else if (child.material.isMeshPhongMaterial) {
+                                    child.material.shininess = 0;
+                                }
+                            }
+                        }
+                        child.castShadow = true; 
+                        child.receiveShadow = true; 
+                    }
+                });
+    
+                // Store the model in the global models object
                 models[modelName] = object;
-                object.visible = visible; // Set initial visibility based on checkbox
-                scene.add(object);
+                if (addToScene) {
+                    scene.add(object);
+                }
             });
         });
     }
-
-    function toggleModelVisibility(modelName, isVisible) {
-        if (models[modelName]) {
-            models[modelName].visible = isVisible;
+    
+    // Function to remove all loaded models from the scene
+    function removeAllModels() {
+        for (let modelName in models) {
+            if (models[modelName]) {
+                scene.remove(models[modelName]);
+            }
         }
     }
-
-    function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    // Function to load the initial basic model
+    function loadInitialModel() {
+        loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
+        loadModel('models/cars.mtl', 'models/cars.obj', 'carsModel', true);
     }
-
+    
+    // Load the initial basic model
+    loadInitialModel();
+    
+    // Event listener for the dropdown selection
+    const modelSelect = document.getElementById('modelSelect');
+    modelSelect.addEventListener('change', (event) => {
+        const selectedModel = event.target.value;
+    
+        // Remove all previously loaded additional models
+        removeAllModels();
+    
+        // Load the selected model
+        switch (selectedModel) {
+            case 'newRoad':
+                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
+                break;
+            case 'parking':
+                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
+                loadModel('models/parking.mtl', 'models/parking.obj', 'parkingModel', true);
+                loadModel('models/seats2.mtl', 'models/seats2.obj', 'seatsModel2', true);
+                break;
+             case 'parking with tree':
+                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
+                loadModel('models/parking.mtl', 'models/parking.obj', 'parkingModel', true);
+                loadModel('models/seats2.mtl', 'models/seats2.obj', 'seatsModel2', true);
+                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
+                break;
+            case 'seatings':
+                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
+                loadModel('models/seatings.mtl', 'models/seatings.obj', 'seatingsModel', true);
+                loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
+                break;
+            case 'seatings with tree':
+                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
+                loadModel('models/seatings.mtl', 'models/seatings.obj', 'seatingsModel', true);
+                loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
+                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
+                break;
+            case 'trees':
+                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
+                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
+                break;
+            case 'trees with bushes':
+                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
+                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
+                loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
+                break;
+            default:
+                console.log("Model not found");
+        }
+    });
+    
+    // Render loop
     function animate() {
         requestAnimationFrame(animate);
-        controls.update();
         renderer.render(scene, camera);
     }
+    
+    // Start the animation loop
+    animate();
 
     init();
 </script>
