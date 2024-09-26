@@ -98,6 +98,35 @@
 
          // Make the camera look at the origin
         camera.lookAt(-100, -50, -50);
+
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+        scene.add(ambientLight);
+        
+        // Add Directional Light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(10, 10, 10); // Adjust position as needed
+        directionalLight.castShadow = true; // Enable shadows
+        
+        // Set up shadow properties
+        directionalLight.shadow.mapSize.width = 1024; // Default
+        directionalLight.shadow.mapSize.height = 1024; // Default
+        directionalLight.shadow.camera.near = 0.5; // Default
+        directionalLight.shadow.camera.far = 50; // Default
+        directionalLight.shadow.camera.left = -10; // Adjust as needed
+        directionalLight.shadow.camera.right = 10; // Adjust as needed
+        directionalLight.shadow.camera.top = 10; // Adjust as needed
+        directionalLight.shadow.camera.bottom = -10; // Adjust as needed
+        
+        scene.add(directionalLight);
+
+        
+        // Initialize OrbitControls
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.25;
+        controls.enableZoom = true;
+
     
     // Global variable to store loaded models
     let models = {};
