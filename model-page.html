@@ -135,50 +135,36 @@
                 if (addToScene) {
                     scene.add(object);
                 }
+            }, undefined, (error) => {
+                console.error(`Failed to load model ${modelName}:`, error);
             });
+        }, undefined, (error) => {
+            console.error(`Failed to load materials for ${modelName}:`, error);
         });
     }
-
-    // Function to load all models at once
-    async function loadAllModels() {
-        await loadModel('models/base.mtl', 'models/base.obj', 'base', true);
-        await loadModel('models/signs.mtl', 'models/signs.obj', 'signs', true);
-        await loadModel('models/cars.mtl', 'models/cars.obj', 'cars', true);
-        await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad');
-        await loadModel('models/parking.mtl', 'models/parking.obj', 'parking');
-        await loadModel('models/seats.mtl', 'models/seats.obj', 'seats');
-        await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2');
-        await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes');
-        await loadModel('models/trees.mtl', 'models/trees.obj', 'trees');
-    }
-    
-    // Define which models to display for each dropdown option
-    const modelVisibilityMap = {
-        base: ['base'],
-        newRoad: ['newRoad'],
-        parking: ['parking', 'bushes'],
-        parking_trees: ['parking', 'bushes', 'trees'],
-        parking_seats: ['parking', 'seats2'],
-        seatings: ['seats', 'bushes'],
-        seatings_trees: ['seats', 'bushes', 'trees'],
-        trees: ['trees'],
-        none: []
-    };
     
     // Function to toggle model visibility based on selection
     function toggleModelVisibility(selectedModel) {
         // Set all models to invisible first
         for (let modelName in models) {
-            models[modelName].visible = false; // Hide all models
+            if (models[modelName]) { // Check if model exists
+                models[modelName].visible = false; // Hide all models
+            }
         }
     
         // Always show the base model
-        models['base'].visible = true; 
+        if (models['base']) {
+            models['base'].visible = true; 
+        }
     
         // Show the selected model(s) along with the base model
         const modelsToShow = modelVisibilityMap[selectedModel] || [];
         modelsToShow.forEach((model) => {
-            models[model].visible = true; // Show selected models
+            if (models[model]) { // Check if model exists before trying to set visibility
+                models[model].visible = true; // Show selected models
+            } else {
+                console.warn(`Model ${model} does not exist in models.`);
+            }
         });
     }
     
