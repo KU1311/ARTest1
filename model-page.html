@@ -189,6 +189,20 @@
             models['cars'].visible = true; 
         }
 
+
+        if (models['parking']) {
+            models['parking'].visible = true; 
+        }
+        if (models['trees']) {
+            models['trees'].visible = true; 
+        }
+        if (models['bushes']) {
+            models['bushes'].visible = true; 
+        }
+        if (models['seats']) {
+            models['seats'].visible = true; 
+        }
+        
         // Show the selected model(s) along with the base model
         const modelsToShow = modelVisibilityMap[selectedModel] || [];
         modelsToShow.forEach((model) => {
