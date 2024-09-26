@@ -175,6 +175,9 @@
         await loadModel('models/base.mtl', 'models/base.obj', 'base', true);
         await loadModel('models/signs.mtl', 'models/signs.obj', 'signs', true);
         await loadModel('models/cars.mtl', 'models/cars.obj', 'cars', true);
+        await loadModel('models/signs-basic.mtl', 'models/signs-basic.obj', 'signs-basic', true);
+        await loadModel('models/signs-old.mtl', 'models/signs-old.obj', 'signs-old', true);
+        await loadModel('models/signs-new.mtl', 'models/signs-new.obj', 'signs-new', false);
         await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad', false);
         await loadModel('models/parking.mtl', 'models/parking.obj', 'parking', false);
         await loadModel('models/seats1.mtl', 'models/seats1.obj', 'seats', false);
@@ -185,14 +188,14 @@
     
     // Define which models to display for each dropdown option
     const modelVisibilityMap = {
-        newRoad: ['newRoad'],
-        parking: ['newRoad', 'parking', 'bushes'],
-        parking_trees: ['newRoad', 'parking', 'bushes', 'trees'],
-        parking_seats: ['newRoad', 'parking', 'seats2'],
-        seatings: ['newRoad', 'seats', 'bushes'],
-        seatings_trees: ['newRoad', 'seats', 'bushes', 'trees'],
-        trees: ['newRoad', 'trees'],
-        none: []
+        newRoad: ['newRoad','signs-new'],
+        parking: ['newRoad', 'parking', 'bushes','signs-new'],
+        parking_trees: ['newRoad', 'parking', 'bushes', 'trees','signs-new'],
+        parking_seats: ['newRoad', 'parking', 'seats2','signs-new'],
+        seatings: ['newRoad', 'seats', 'bushes','signs-new'],
+        seatings_trees: ['newRoad', 'seats', 'bushes', 'trees','signs-new'],
+        trees: ['newRoad', 'trees','signs-new'],
+        none: ['signs-old']
     };
     
     // Function to toggle model visibility based on selection
@@ -214,7 +217,9 @@
         if (models['cars']) {
             models['cars'].visible = true; 
         }
-
+        if (models['signs-basic']) {
+            models['signs-basic'].visible = true; 
+        }
         
         // Show the selected model(s) along with the base model
         const modelsToShow = modelVisibilityMap[selectedModel] || [];
