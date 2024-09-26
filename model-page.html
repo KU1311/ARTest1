@@ -142,6 +142,60 @@
             console.error(`Failed to load materials for ${modelName}:`, error);
         });
     }
+
+    // Function to load all models at once
+
+    async function loadAllModels() {
+    
+    await loadModel('models/base.mtl', 'models/base.obj', 'base');
+    
+    await loadModel('models/signs.mtl', 'models/signs.obj', 'signs');
+    
+    await loadModel('models/cars.mtl', 'models/cars.obj', 'cars');
+    
+    await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad');
+    
+    await loadModel('models/parking.mtl', 'models/parking.obj', 'parking');
+    
+    await loadModel('models/seats.mtl', 'models/seats.obj', 'seats');
+    
+    await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2');
+    
+    await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes');
+    
+    await loadModel('models/trees.mtl', 'models/trees.obj', 'trees');
+    
+    // Add the base model to the scene
+    
+    scene.add(models['base']);
+    
+    scene.add(models['signs']);
+    
+    scene.add(models['cars']);
+    
+    }
+    
+    // Define which models to display for each dropdown option
+    
+    const modelVisibilityMap = {
+    
+    newRoad: ['newRoad'],
+    
+    parking: ['parking','bushes'],
+    
+    parking_trees: ['parking','bushes','trees'],
+    
+    parking_seats: ['parking','seats2'],
+    
+    seatings: ['seats', 'bushes'],
+    
+    seatings_trees: ['seats', 'bushes','trees'],
+    
+    trees: ['trees'],
+    
+    none: []
+    
+    };
     
     // Function to toggle model visibility based on selection
     function toggleModelVisibility(selectedModel) {
