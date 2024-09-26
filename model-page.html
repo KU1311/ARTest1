@@ -39,6 +39,7 @@
     <h2>3D模型</h2>
     <label for="modelSelect">請選擇模型:</label>
     <select id="modelSelect">
+        <option value="none">不擴闊行人路</option>
         <option value="newRoad">擴闊行人路, 不另設設施</option>
         <option value="parking">泊車位和花槽</option>
         <option value="parking_trees">泊車位, 花槽, 樹</option>
@@ -46,7 +47,6 @@
         <option value="seatings">座椅和花槽</option>
         <option value="seatings_trees">座椅, 花槽, 樹</option>
         <option value="trees">樹</option>
-        <option value="none">不顯示任何模型</option>
     </select>
 </div>
 
@@ -160,12 +160,12 @@
     // Define which models to display for each dropdown option
     const modelVisibilityMap = {
         newRoad: ['newRoad'],
-        parking: ['parking', 'bushes'],
-        parking_trees: ['parking', 'bushes', 'trees'],
-        parking_seats: ['parking', 'seats2'],
-        seatings: ['seats', 'bushes'],
-        seatings_trees: ['seats', 'bushes', 'trees'],
-        trees: ['trees'],
+        parking: ['newRoad', 'parking', 'bushes'],
+        parking_trees: ['newRoad', 'parking', 'bushes', 'trees'],
+        parking_seats: ['newRoad', 'parking', 'seats2'],
+        seatings: ['newRoad', 'seats', 'bushes'],
+        seatings_trees: ['newRoad', 'seats', 'bushes', 'trees'],
+        trees: ['newRoad', 'trees'],
         none: []
     };
     
