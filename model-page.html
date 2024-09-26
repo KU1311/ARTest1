@@ -207,6 +207,8 @@
     loadAllModels().then(() => {
         // Set up the initial camera position
         camera.position.z = -5;
+        camera.position.y = 5;
+        camera.position.x = 10;
 
         // Initial visibility setup
         toggleModelVisibility('none'); // Hide all additional models initially
