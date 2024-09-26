@@ -58,7 +58,7 @@
     // Initialize your scene, camera, and renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById('canvas').appendChild(renderer.domElement);
 
@@ -174,7 +174,6 @@
     // Function to load all models at once
     async function loadAllModels() {
         await loadModel('models/base.mtl', 'models/base.obj', 'base', true);
-        await loadModel('models/signs.mtl', 'models/signs.obj', 'signs', true);
         await loadModel('models/cars.mtl', 'models/cars.obj', 'cars', true);
         await loadModel('models/signs-basic.mtl', 'models/signs-basic.obj', 'signs-basic', true);
         await loadModel('models/signs-old.mtl', 'models/signs-old.obj', 'signs-old', true);
