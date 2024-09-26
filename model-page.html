@@ -41,11 +41,11 @@
     <select id="modelSelect">
         <option value="newRoad" selected>擴闊行人路, 不另設設施</option>
         <option value="parking" selected>泊車位和花槽</option>
-        <option value="parking with tree" selected>泊車位, 花槽, 樹</option>
+        <option value="parking_trees" selected>泊車位, 花槽, 樹</option>
         <option value="seatings" selected>座椅和花槽</option>
-        <option value="seatings with tree" selected>座椅, 花槽, 樹</option>
+        <option value="seatings_trees" selected>座椅, 花槽, 樹</option>
         <option value="trees" selected>樹</option>
-        <option value="trees with bushes" selected>花槽和樹</option>
+        <option value="trees_bushes" selected>花槽和樹</option>
     </select>
 </div>
 
@@ -177,82 +177,79 @@
             });
         });
     }
+    // Function to load all models at once
+    async function loadAllModels() {
+        await loadModel('models/base.mtl', 'models/base.obj', 'base');
+        await loadModel('models/signs.mtl', 'models/signs.obj', 'signs');
+        await loadModel('models/cars.mtl', 'models/cars.obj', 'cars');
+        await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad');
+        await loadModel('models/parking.mtl', 'models/parking.obj', 'parking');
+        await loadModel('models/seats.mtl', 'models/seats.obj', 'seats');
+        await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2');
+        await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes');
+        await loadModel('models/trees.mtl', 'models/trees.obj', 'trees');
+        
+        // Add the base model to the scene
+        scene.add(models['base']);
+        scene.add(models['signs']);
+        scene.add(models['cars']);
+    }
     
-    // Function to remove all loaded models from the scene
-    function removeAllModels() {
+    // Define which models to display for each dropdown option
+    const modelVisibilityMap = {
+        newRoad: ['newRoad'],
+        parking: ['parking','bushes'],
+        parking_trees: ['parking','bushes','trees'],
+        parking_seats: ['parking','seats2'],
+        seatings: ['seats', 'bushes'],
+        seatings_trees: ['seats', 'bushes','trees'],
+        trees: ['trees'],
+        none: [] 
+    };
+    
+    // Function to toggle model visibility based on selection
+    function toggleModelVisibility(selectedModel) {
+        // Set all models to invisible first
         for (let modelName in models) {
-            if (models[modelName]) {
-                scene.remove(models[modelName]);
-            }
+            models[modelName].visible = false; // Hide all models
         }
+    
+        // Always show the base model
+        models['baseModel'].visible = true; 
+    
+        // Show the selected model(s) along with the base model
+        const modelsToShow = modelVisibilityMap[selectedModel] || [];
+        modelsToShow.forEach((model) => {
+            models[model].visible = true; // Show selected models
+        });
     }
     
-    // Function to load the initial basic model
-    function loadInitialModel() {
-        loadModel('models/base.mtl', 'models/base.obj', 'baseModel', true);
-        loadModel('models/cars.mtl', 'models/cars.obj', 'carsModel', true);
-    }
+    // Load all models when the application starts
+    loadAllModels().then(() => {
+        // Set up the initial camera position
+        camera.position.z = 5;
     
-    // Load the initial basic model
-    loadInitialModel();
+        // Set up the dropdown event listener
+        const modelSelect = document.getElementById('modelSelect');
+        modelSelect.addEventListener('change', (event) => {
+            const selectedModel = event.target.value;
+            toggleModelVisibility(selectedModel); // Toggle visibility based on selection
+        });
     
-    // Event listener for the dropdown selection
-    const modelSelect = document.getElementById('modelSelect');
-    modelSelect.addEventListener('change', (event) => {
-        const selectedModel = event.target.value;
+        // Initial visibility setup
+        toggleModelVisibility('none'); // Hide all additional models initially
     
-        // Remove all previously loaded additional models
-        removeAllModels();
-    
-        // Load the selected model
-        switch (selectedModel) {
-            case 'newRoad':
-                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-                break;
-            case 'parking':
-                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-                loadModel('models/parking.mtl', 'models/parking.obj', 'parkingModel', true);
-                loadModel('models/seats2.mtl', 'models/seats2.obj', 'seatsModel2', true);
-                break;
-             case 'parking with tree':
-                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-                loadModel('models/parking.mtl', 'models/parking.obj', 'parkingModel', true);
-                loadModel('models/seats2.mtl', 'models/seats2.obj', 'seatsModel2', true);
-                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
-                break;
-            case 'seatings':
-                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-                loadModel('models/seatings.mtl', 'models/seatings.obj', 'seatingsModel', true);
-                loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
-                break;
-            case 'seatings with tree':
-                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-                loadModel('models/seatings.mtl', 'models/seatings.obj', 'seatingsModel', true);
-                loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
-                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
-                break;
-            case 'trees':
-                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
-                break;
-            case 'trees with bushes':
-                loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoadModel', true);
-                loadModel('models/trees.mtl', 'models/trees.obj', 'treesModel', true);
-                loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushesModel', true);
-                break;
-            default:
-                console.log("Model not found");
+        // Render loop
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
         }
+    
+        // Start the animation loop
+        animate();
+    }).catch(error => {
+        console.error('Error loading models:', error);
     });
-    
-    // Render loop
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
-    
-    // Start the animation loop
-    animate();
 
 </script>
 
