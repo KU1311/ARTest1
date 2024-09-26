@@ -174,7 +174,7 @@
         // Set all models to invisible first
         for (let modelName in models) {
             if (models[modelName]) {
-                models[modelName].visible = true; // Hide all models
+                models[modelName].visible = false; // Hide all models
             }
         }
 
@@ -189,19 +189,6 @@
             models['cars'].visible = true; 
         }
 
-
-        if (models['parking']) {
-            models['parking'].visible = true; 
-        }
-        if (models['trees']) {
-            models['trees'].visible = true; 
-        }
-        if (models['bushes']) {
-            models['bushes'].visible = true; 
-        }
-        if (models['seats']) {
-            models['seats'].visible = true; 
-        }
         
         // Show the selected model(s) along with the base model
         const modelsToShow = modelVisibilityMap[selectedModel] || [];
