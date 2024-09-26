@@ -26,7 +26,7 @@ newmtl _auto_17
 Ka 0.000000 0.000000 0.000000
 Kd 0.270588 0.270588 0.270588
 Ks 0.330000 0.330000 0.330000
-map_Kd cars/_auto_17.jpg
+map_Kd cars/auto_17.jpg
 
 newmtl _auto_18
 Ka 0.000000 0.000000 0.000000
