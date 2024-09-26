@@ -172,15 +172,21 @@
     // Function to toggle model visibility based on selection
     function toggleModelVisibility(selectedModel) {
         // Set all models to invisible first
-        for (let modelName in models) {
-            if (models[modelName]) {
-                models[modelName].visible = false; // Hide all models
-            }
-        }
+        //for (let modelName in models) {
+        //    if (models[modelName]) {
+        //        models[modelName].visible = false; // Hide all models
+        //    }
+        //}
 
         // Always show the base model
         if (models['base']) {
             models['base'].visible = true; 
+        }
+        if (models['signs']) {
+            models['signs'].visible = true; 
+        }
+        if (models['cars']) {
+            models['cars'].visible = true; 
         }
 
         // Show the selected model(s) along with the base model
