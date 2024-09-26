@@ -39,13 +39,14 @@
     <h2>3D模型</h2>
     <label for="modelSelect">請選擇模型:</label>
     <select id="modelSelect">
-        <option value="newRoad" selected>擴闊行人路, 不另設設施</option>
-        <option value="parking" selected>泊車位和花槽</option>
-        <option value="parking_trees" selected>泊車位, 花槽, 樹</option>
-        <option value="seatings" selected>座椅和花槽</option>
-        <option value="seatings_trees" selected>座椅, 花槽, 樹</option>
-        <option value="trees" selected>樹</option>
-        <option value="trees_bushes" selected>花槽和樹</option>
+        <option value="newRoad">擴闊行人路, 不另設設施</option>
+        <option value="parking">泊車位和花槽</option>
+        <option value="parking_trees">泊車位, 花槽, 樹</option>
+        <option value="parking_seats">泊車位, 座椅</option>
+        <option value="seatings">座椅和花槽</option>
+        <option value="seatings_trees">座椅, 花槽, 樹</option>
+        <option value="trees">樹</option>
+        <option value="none">不顯示任何模型</option>
     </select>
 </div>
 
@@ -54,122 +55,82 @@
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/MTLLoader.js"></script>
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
 <script>
-    // Initialize your scene, camera, and renderer here
-    scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas').appendChild(renderer.domElement);
+    // Initialize your scene, camera, and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas').appendChild(renderer.domElement);
 
-        // Set the background color (light blue for sky, gray for ground)
-        const skyColor = new THREE.Color(0x87CEEB); // Light blue
-        const groundColor = new THREE.Color(0xA9A9A9); // Gray
-        
-        // Create a gradient effect
-        const gradientTexture = createGradientTexture(skyColor, groundColor);
-        scene.background = gradientTexture;
-        
-        // Function to create a gradient texture
-        function createGradientTexture(skyColor, groundColor) {
-            const size = 512; // Texture size
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            
-            const context = canvas.getContext('2d');
-            
-            // Create gradient
-            const gradient = context.createLinearGradient(0, 0, 0, size);
-            gradient.addColorStop(0, skyColor.getStyle()); // Sky color
-            gradient.addColorStop(1, groundColor.getStyle()); // Ground color
-        
-            context.fillStyle = gradient;
-            context.fillRect(0, 0, size, size);
-            
-            // Create texture from canvas
-            const texture = new THREE.Texture(canvas);
-            texture.needsUpdate = true; // Update texture
-            return texture;
-        }
-        
-        // Set camera position
-        camera.position.set(-5, 5, -10);
-        //camera.rotation.y = Math.PI; 
-
-         // Make the camera look at the origin
-        camera.lookAt(-100, -50, -50);
-
-        // Add lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-        scene.add(ambientLight);
-        
-        // Add Directional Light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(10, 10, 10); // Adjust position as needed
-        directionalLight.castShadow = true; // Enable shadows
-        
-        // Set up shadow properties
-        directionalLight.shadow.mapSize.width = 1024; // Default
-        directionalLight.shadow.mapSize.height = 1024; // Default
-        directionalLight.shadow.camera.near = 0.5; // Default
-        directionalLight.shadow.camera.far = 50; // Default
-        directionalLight.shadow.camera.left = -10; // Adjust as needed
-        directionalLight.shadow.camera.right = 10; // Adjust as needed
-        directionalLight.shadow.camera.top = 10; // Adjust as needed
-        directionalLight.shadow.camera.bottom = -10; // Adjust as needed
-        
-        scene.add(directionalLight);
-
-        
-        // Initialize OrbitControls
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-        controls.enableZoom = true;
-
+    // Set the background color
+    const skyColor = new THREE.Color(0x87CEEB); // Light blue
+    const groundColor = new THREE.Color(0xA9A9A9); // Gray
     
+    // Create a gradient effect
+    const gradientTexture = createGradientTexture(skyColor, groundColor);
+    scene.background = gradientTexture;
+    
+    // Function to create a gradient texture
+    function createGradientTexture(skyColor, groundColor) {
+        const size = 512; // Texture size
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        
+        const context = canvas.getContext('2d');
+        
+        // Create gradient
+        const gradient = context.createLinearGradient(0, 0, 0, size);
+        gradient.addColorStop(0, skyColor.getStyle());
+        gradient.addColorStop(1, groundColor.getStyle());
+    
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, size, size);
+        
+        // Create texture from canvas
+        const texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true; // Update texture
+        return texture;
+    }
+    
+    // Set camera position
+    camera.position.set(-5, 5, -10);
+    camera.lookAt(0, 0, 0); // Adjusted to look at the origin
+
+    // Add lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(10, 10, 10);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+
+    // Initialize OrbitControls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = true;
+
     // Global variable to store loaded models
     let models = {};
     
     // Function to load models
-    function loadModel(mtlPath, objPath, modelName, addToScene) {
+    function loadModel(mtlPath, objPath, modelName, addToScene = false) {
         const mtlLoader = new THREE.MTLLoader();
         const objLoader = new THREE.OBJLoader();
     
         mtlLoader.load(mtlPath, (materials) => {
-            materials.preload(); // Preload materials
+            materials.preload();
     
             objLoader.setMaterials(materials);
             objLoader.load(objPath, (object) => {
-                // Traverse through all children of the loaded object
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        // Adjust material properties to make it matte
-                        if (child.material) {
-                            if (Array.isArray(child.material)) {
-                                child.material.forEach((material) => {
-                                    if (material.isMeshStandardMaterial) {
-                                        material.roughness = 1;
-                                        material.metalness = 0;
-                                    } else if (material.isMeshPhongMaterial) {
-                                        material.shininess = 0;
-                                    }
-                                });
-                            } else {
-                                if (child.material.isMeshStandardMaterial) {
-                                    child.material.roughness = 1;
-                                    child.material.metalness = 0;
-                                } else if (child.material.isMeshPhongMaterial) {
-                                    child.material.shininess = 0;
-                                }
-                            }
-                        }
                         child.castShadow = true; 
                         child.receiveShadow = true; 
                     }
                 });
-    
-                // Store the model in the global models object
                 models[modelName] = object;
                 if (addToScene) {
                     scene.add(object);
@@ -177,34 +138,30 @@
             });
         });
     }
+
     // Function to load all models at once
     async function loadAllModels() {
-        await loadModel('models/base.mtl', 'models/base.obj', 'base');
-        await loadModel('models/signs.mtl', 'models/signs.obj', 'signs');
-        await loadModel('models/cars.mtl', 'models/cars.obj', 'cars');
+        await loadModel('models/base.mtl', 'models/base.obj', 'base', true);
+        await loadModel('models/signs.mtl', 'models/signs.obj', 'signs', true);
+        await loadModel('models/cars.mtl', 'models/cars.obj', 'cars', true);
         await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad');
         await loadModel('models/parking.mtl', 'models/parking.obj', 'parking');
         await loadModel('models/seats.mtl', 'models/seats.obj', 'seats');
         await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2');
         await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes');
         await loadModel('models/trees.mtl', 'models/trees.obj', 'trees');
-        
-        // Add the base model to the scene
-        scene.add(models['base']);
-        scene.add(models['signs']);
-        scene.add(models['cars']);
     }
     
     // Define which models to display for each dropdown option
     const modelVisibilityMap = {
         newRoad: ['newRoad'],
-        parking: ['parking','bushes'],
-        parking_trees: ['parking','bushes','trees'],
-        parking_seats: ['parking','seats2'],
+        parking: ['parking', 'bushes'],
+        parking_trees: ['parking', 'bushes', 'trees'],
+        parking_seats: ['parking', 'seats2'],
         seatings: ['seats', 'bushes'],
-        seatings_trees: ['seats', 'bushes','trees'],
+        seatings_trees: ['seats', 'bushes', 'trees'],
         trees: ['trees'],
-        none: [] 
+        none: []
     };
     
     // Function to toggle model visibility based on selection
@@ -215,7 +172,7 @@
         }
     
         // Always show the base model
-        models['baseModel'].visible = true; 
+        models['base'].visible = true; 
     
         // Show the selected model(s) along with the base model
         const modelsToShow = modelVisibilityMap[selectedModel] || [];
@@ -242,6 +199,7 @@
         // Render loop
         function animate() {
             requestAnimationFrame(animate);
+            controls.update(); // Update controls for damping effect
             renderer.render(scene, camera);
         }
     
@@ -250,7 +208,6 @@
     }).catch(error => {
         console.error('Error loading models:', error);
     });
-
 </script>
 
 </body>
