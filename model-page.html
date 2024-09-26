@@ -94,7 +94,7 @@
     }
     
     // Set camera position
-    camera.position.set(0, 2, 5); // Adjusted for better visibility
+    camera.position.set(0, 2, -5); // Adjusted for better visibility
     camera.lookAt(0, 0, 0); // Look at the origin
 
     // Add lighting
@@ -172,11 +172,11 @@
     // Function to toggle model visibility based on selection
     function toggleModelVisibility(selectedModel) {
         // Set all models to invisible first
-        //for (let modelName in models) {
-        //    if (models[modelName]) {
-        //        models[modelName].visible = false; // Hide all models
-        //    }
-        //}
+        for (let modelName in models) {
+            if (models[modelName]) {
+                models[modelName].visible = true; // Hide all models
+            }
+        }
 
         // Always show the base model
         if (models['base']) {
