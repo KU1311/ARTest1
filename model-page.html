@@ -205,7 +205,10 @@
     // Load all models when the application starts
     loadAllModels().then(() => {
         // Set up the initial camera position
-        camera.position.z = 5;
+        camera.position.z = -5;
+
+        // Initial visibility setup
+        toggleModelVisibility('none'); // Hide all additional models initially
 
         // Set up the dropdown event listener
         const modelSelect = document.getElementById('modelSelect');
@@ -214,9 +217,6 @@
             console.log(`Selected model: ${selectedModel}`); // Debugging statement
             toggleModelVisibility(selectedModel); // Toggle visibility based on selection
         });
-
-        // Initial visibility setup
-        toggleModelVisibility('none'); // Hide all additional models initially
 
         // Render loop
         function animate() {
