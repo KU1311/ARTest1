@@ -94,8 +94,8 @@
     }
     
     // Set camera position
-    camera.position.set(-5, 5, -10);
-    camera.lookAt(0, 0, 0); // Adjusted to look at the origin
+    camera.position.set(0, 2, 5); // Adjusted for better visibility
+    camera.lookAt(0, 0, 0); // Look at the origin
 
     // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -151,7 +151,7 @@
         await loadModel('models/cars.mtl', 'models/cars.obj', 'cars', true);
         await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad');
         await loadModel('models/parking.mtl', 'models/parking.obj', 'parking');
-        await loadModel('models/seats1.mtl', 'models/seats1.obj', 'seats');
+        await loadModel('models/seats.mtl', 'models/seats.obj', 'seats');
         await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2');
         await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes');
         await loadModel('models/trees.mtl', 'models/trees.obj', 'trees');
@@ -188,6 +188,7 @@
         modelsToShow.forEach((model) => {
             if (models[model]) {
                 models[model].visible = true; // Show selected models
+                console.log(`Showing model: ${model}`); // Debugging statement
             } else {
                 console.warn(`Model ${model} does not exist in models.`);
             }
@@ -203,6 +204,7 @@
         const modelSelect = document.getElementById('modelSelect');
         modelSelect.addEventListener('change', (event) => {
             const selectedModel = event.target.value;
+            console.log(`Selected model: ${selectedModel}`); // Debugging statement
             toggleModelVisibility(selectedModel); // Toggle visibility based on selection
         });
 
