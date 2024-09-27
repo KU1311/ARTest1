@@ -1,0 +1,26 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl _6
+Ka 0.000000 0.000000 0.000000
+Kd 0.180392 0.294118 0.098039
+Ks 0.330000 0.330000 0.330000
+map_Kd bushes/6.png
+
+newmtl wall_brick
+Ka 0.000000 0.000000 0.000000
+Kd 0.705882 0.705882 0.725490
+Ks 0.330000 0.330000 0.330000
+map_Kd bushes/wall_brick.png
+
+newmtl Lisanne_Hair
+Ka 0.000000 0.000000 0.000000
+Kd 0.462745 0.313725 0.227451
+Ks 0.330000 0.330000 0.330000
+
