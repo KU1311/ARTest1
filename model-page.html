@@ -9,7 +9,7 @@
             margin: 0;
             overflow: hidden;
             display: flex;
-            flex-direction: column; /* Change to column layout */
+            flex-direction: column; /* Stack elements vertically */
             height: 100vh; /* Full height of the viewport */
         }
         #canvas {
@@ -21,7 +21,8 @@
             background: rgba(255, 255, 255, 0.8);
             padding: 10px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-            overflow-y: auto;
+            overflow-y: auto; /* Allow scrolling if content exceeds height */
+            max-height: 200px; /* Set a max height for controls */
         }
         h2 {
             margin: 0;
@@ -30,6 +31,18 @@
         label {
             display: block;
             margin: 5px 0;
+        }
+        /* Media Query for Responsive Design */
+        @media (max-width: 600px) {
+            #controls {
+                max-height: 150px; /* Adjust max height for mobile */
+            }
+            h2 {
+                font-size: 20px; /* Smaller title on mobile */
+            }
+            label {
+                font-size: 16px; /* Smaller font for labels on mobile */
+            }
         }
     </style>
 </head>
