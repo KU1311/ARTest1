@@ -14,7 +14,7 @@
         }
         #canvas {
             width: 100%; /* Full width */
-            flex: 1; /* Expand to fill the remaining space */
+            height: 60vh; /* Set a fixed height for the canvas */
             display: block;
         }
         #controls {
@@ -22,7 +22,6 @@
             padding: 10px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             overflow-y: auto; /* Allow scrolling if content exceeds height */
-            max-height: 200px; /* Set a max height for controls */
         }
         h2 {
             margin: 0;
@@ -34,9 +33,6 @@
         }
         /* Media Query for Responsive Design */
         @media (max-width: 600px) {
-            #controls {
-                max-height: 150px; /* Adjust max height for mobile */
-            }
             h2 {
                 font-size: 20px; /* Smaller title on mobile */
             }
