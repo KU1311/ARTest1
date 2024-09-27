@@ -33,11 +33,18 @@
         }
         /* Media Query for Responsive Design */
         @media (max-width: 600px) {
+            #controls {
+                padding: 5px; /* Less padding on mobile */
+            }
             h2 {
                 font-size: 20px; /* Smaller title on mobile */
+                margin-bottom: 10px; /* Add space below title */
             }
             label {
                 font-size: 16px; /* Smaller font for labels on mobile */
+            }
+            select {
+                font-size: 16px; /* Make dropdown font size smaller too */
             }
         }
     </style>
