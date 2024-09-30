@@ -12,6 +12,25 @@
             text-align: center;
             background-color: #f7f7f7;
         }
+        header {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .language-switch {
+            display: flex;
+            gap: 15px;
+        }
+        .language-switch a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .language-switch a:hover {
+            text-decoration: underline;
+        }
         button {
             padding: 10px 20px;
             margin: 10px;
@@ -26,7 +45,11 @@
     </style>
 </head>
 <body>
-
+<header>
+<div class="language-switch">
+    <a href="index.html">中文</a>
+    <a href="index-en.html">ENG</a>
+</div></header>header>
 <div class="container">
     <h1>油旺區健康城市建議</h1>
     <p>擴闊行人路想像</p>
