@@ -33,10 +33,10 @@
             <!-- 3D Model -->
             <a-entity 
                 id="modelEntity"
-                obj-model="obj: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/base.obj; mtl: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/base.mtl" 
+                obj-model="obj: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/cars.obj; mtl: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/cars.mtl" 
                 scale="0.5 0.5 0.5" 
                 position="0 0.1 0.5" 
-                rotation="0 0 0"
+                rotation="90 0 0"  <!-- Changed rotation here -->
                 on-error="console.error('Model failed to load!');"
                 loaded="modelLoaded()"></a-entity>
         </a-marker>
@@ -57,7 +57,6 @@
                 const markerRotation = marker.object3D.rotation;
                 const cameraPosition = camera.object3D.position;
 
-                // Check if the model is loaded and displayed
                 let modelStatus = '';
                 if (modelLoadedState) {
                     modelStatus = modelDisplayedState ? "Displayed" : "Loaded";
@@ -74,7 +73,6 @@
                 `;
             }
 
-            // Update displayed state if the marker is visible
             if (marker.object3D.visible) {
                 modelDisplayedState = modelLoadedState;
             }
@@ -84,7 +82,8 @@
 
         function modelLoaded() {
             modelLoadedState = true;
-            updateDebugInfo(); // Update the debug info when the model is loaded
+            console.log("Model loaded successfully!");
+            updateDebugInfo(); // Update debug info when model is loaded
         }
 
         updateDebugInfo();
