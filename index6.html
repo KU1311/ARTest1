@@ -3,43 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-scale=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>AR Demo</title>
+    <title>油旺區健康城市建議 - 擴闊行人路想像 AR體驗</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-        #debugInfo {
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+        #modelSelector {
             position: fixed;
-            top: 10px;
+            top: 80px;
             left: 10px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px;
             z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            pointer-events: auto; /* Ensure dropdown is clickable */
+        }
+        #headerText {
+            position: fixed;
+            top: 10px; /* Position above the dropdown */
+            left: 10px;
+            z-index: 1000;
+            color: black; /* Text color */
             font-family: Arial, sans-serif;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
+    <div id="headerText">油旺區健康城市建議 - AR模型   您想像中的行人路是怎樣的呢</div>
+    <select id="modelSelector">
+        <option value="none">請選擇:</option>
+        <option value="newRoad">擴闊行人路, 不另設設施</option>
+        <option value="parking">泊車位和花槽</option>
+        <option value="parking_trees">泊車位, 花槽, 樹</option>
+        <option value="parking_seats">泊車位, 座椅</option>
+        <option value="seatings">座椅和花槽</option>
+        <option value="seatings_trees">座椅, 花槽, 樹</option>
+        <option value="trees">樹</option>
+    </select>
     
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <a-marker preset="hiro">
-            <!-- Blue square -->
-            <a-plane position="0 0 0" 
-                     rotation="-90 0 0" 
-                     width="1" 
-                     height="1" 
-                     color="#0000FF" 
-                     opacity="0.5"></a-plane>
-            <!-- 3D Model -->
-            <a-entity 
-                obj-model="obj: models/cars.obj; mtl: models/cars.mtl" 
-                scale="0.5 0.5 0.5" 
-                position="0 0 0.5" 
-                rotation="0 0 0"></a-entity>
-        </a-marker>
-        <a-entity camera></a-entity>
+        <
     </a-scene>
 
-    
+    <script>
+        // Handle model selection
+        document.getElementById('modelSelector').addEventListener('change', function (event) {
+            const selectedModel = event.target.value;
+            const models = ['base', 'cars', 'newRoad', 'signs-basic', 'signs-old', 'signs-new', 'parking', 'seats', 'seats2', 'bushes', 'trees'];
+
+            // Hide all models
+            models.forEach(model => {
+                document.getElementById(model).setAttribute('visible', 'false');
+            });
+
+            // Show selected model
+            if (selectedModel === 'newRoad') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
+                document.getElementById('newRoad').setAttribute('visible', 'true');
+                document.getElementById('signs-new').setAttribute('visible', 'true');
+            } else if (selectedModel === 'parking') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
+                document.getElementById('newRoad').setAttribute('visible', 'true');
+                document.getElementById('parking').setAttribute('visible', 'true');
+            } else if (selectedModel === 'parking_trees') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
+                document.getElementById('newRoad').setAttribute('visible', 'true');
+                document.getElementById('parking').setAttribute('visible', 'true');
+                document.getElementById('bushes').setAttribute('visible', 'true');
+                document.getElementById('trees').setAttribute('visible', 'true');
+                document.getElementById('signs-new').setAttribute('visible', 'true');
+            } else if (selectedModel === 'parking_seats') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
+                document.getElementById('newRoad').setAttribute('visible', 'true');
+                document.getElementById('parking').setAttribute('visible', 'true');
+                document.getElementById('seats2').setAttribute('visible', 'true');
+                document.getElementById('signs-new').setAttribute('visible', 'true');
+            } else if (selectedModel === 'seatings') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
+                document.getElementById('newRoad').setAttribute('visible', 'true');
+                document.getElementById('seats').setAttribute('visible', 'true');
+                document.getElementById('bushes').setAttribute('visible', 'true');
+                document.getElementById('signs-new').setAttribute('visible', 'true');
+            } else if (selectedModel === 'seatings_trees') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
+                document.getElementById('newRoad').setAttribute('visible', 'true');
+                document.getElementById('seats').setAttribute('visible', 'true');
+                document.getElementById('bushes').setAttribute('visible', 'true');
+                document.getElementById('trees').setAttribute('visible', 'true');
+                document.getElementById('signs-new').setAttribute('visible', 'true');
+            } else if (selectedModel === 'trees') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
+                document.getElementById('newRoad').setAttribute('visible', 'true');
+                document.getElementById('trees').setAttribute('visible', 'true');
+                document.getElementById('signs-new').setAttribute('visible', 'true');
+            }
+        });
+    </script>
 </body>
 </html>
