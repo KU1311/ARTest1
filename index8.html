@@ -72,20 +72,21 @@
                     modelStatus = "Not Loaded";
                 }
 
+                function old_debug_info(){
                 debugInfo.innerHTML = `
                     Marker Visible: ${marker.object3D.visible}<br>
                     Marker Position: ${markerPosition.x.toFixed(2)}, ${markerPosition.y.toFixed(2)}, ${markerPosition.z.toFixed(2)}<br>
                     Marker Rotation: ${markerRotation.x.toFixed(2)}, ${markerRotation.y.toFixed(2)}, ${markerRotation.z.toFixed(2)}<br>
                     Camera Position: ${cameraPosition.x.toFixed(2)}, ${cameraPosition.y.toFixed(2)}, ${cameraPosition.z.toFixed(2)}<br>
                     Model Status: ${modelStatus}
-                `;
+                `; }
             }
 
             if (marker.object3D.visible) {
                 modelDisplayedState = modelLoadedState;
             }
 
-            //requestAnimationFrame(updateDebugInfo);
+            requestAnimationFrame(updateDebugInfo);
         }
 
         function modelLoaded() {
