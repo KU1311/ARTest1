@@ -12,35 +12,27 @@
             margin: 0;
             overflow: hidden;
         }
-        #debugInfo {
+        #modelSelector {
             position: fixed;
             top: 10px;
             left: 10px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px;
             z-index: 1000;
-            font-family: Arial, sans-serif;
-        }
-        #modelSelector {
-            margin-top: 10px;
             background: rgba(255, 255, 255, 0.8);
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 5px;
+            pointer-events: auto; /* Ensure dropdown is clickable */
         }
     </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
-    <div id="debugInfo">
-        <label for="modelSelector">Select Model: </label>
-        <select id="modelSelector">
-            <option value="none">Select Model Combination</option>
-            <option value="model1">Model 1</option>
-            <option value="model2">Model 2</option>
-            <option value="model3">Model 3</option>
-        </select>
-    </div>
+    <select id="modelSelector">
+        <option value="none">Select Model Combination</option>
+        <option value="model1">Model 1</option>
+        <option value="model2">Model 2</option>
+        <option value="model3">Model 3</option>
+    </select>
+    
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         <a-marker preset="kanji">
             <!-- Blue square -->
@@ -74,51 +66,6 @@
     </a-scene>
 
     <script>
-        let modelLoadedState = false;
-        let modelDisplayedState = false;
-
-        function updateDebugInfo() {
-            const marker = document.querySelector('a-marker');
-            const camera = document.querySelector('a-entity[camera]');
-            const debugInfo = document.getElementById('debugInfo');
-
-            if (marker && camera) {
-                const markerPosition = marker.object3D.position;
-                const markerRotation = marker.object3D.rotation;
-                const cameraPosition = camera.object3D.position;
-
-                let modelStatus = modelLoadedState ? (modelDisplayedState ? "Displayed" : "Loaded") : "Not Loaded";
-
-                debugInfo.innerHTML = `
-                    <label for="modelSelector">Select Model: </label>
-                    <select id="modelSelector">
-                        <option value="none">Select Model Combination</option>
-                        <option value="model1">Model 1</option>
-                        <option value="model2">Model 2</option>
-                        <option value="model3">Model 3</option>
-                    </select>
-                    <br>
-                    Marker Visible: ${marker.object3D.visible}<br>
-                    Marker Position: ${markerPosition.x.toFixed(2)}, ${markerPosition.y.toFixed(2)}, ${markerPosition.z.toFixed(2)}<br>
-                    Marker Rotation: ${markerRotation.x.toFixed(2)}, ${markerRotation.y.toFixed(2)}, ${markerRotation.z.toFixed(2)}<br>
-                    Camera Position: ${cameraPosition.x.toFixed(2)}, ${cameraPosition.y.toFixed(2)}, ${cameraPosition.z.toFixed(2)}<br>
-                    Model Status: ${modelStatus}
-                `;
-            }
-
-            if (marker.object3D.visible) {
-                modelDisplayedState = modelLoadedState;
-            }
-
-            requestAnimationFrame(updateDebugInfo);
-        }
-
-        function modelLoaded() {
-            modelLoadedState = true;
-            console.log("Model loaded successfully!");
-            updateDebugInfo();
-        }
-
         // Handle model selection
         document.getElementById('modelSelector').addEventListener('change', function (event) {
             const selectedModel = event.target.value;
@@ -138,8 +85,6 @@
                 document.getElementById('modelEntity3').setAttribute('visible', 'true');
             }
         });
-
-        updateDebugInfo();
     </script>
 </body>
 </html>
