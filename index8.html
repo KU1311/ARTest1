@@ -62,8 +62,8 @@
                       position="0 0 0" 
                       rotation="90 180 0" 
                       visible="false"></a-entity>
-            <a-entity id="bushes" 
-                      obj-model="obj: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/bushes.obj; mtl: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/bushes.mtl" 
+            <a-entity id="newroad" 
+                      obj-model="obj: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/newRoad.obj; mtl: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/newRoad.mtl" 
                       scale="0.5 0.5 0.5" 
                       position="0 0 00" 
                       rotation="90 180 0" 
@@ -139,7 +139,7 @@
         // Handle model selection
         document.getElementById('modelSelector').addEventListener('change', function (event) {
             const selectedModel = event.target.value;
-            const models = ['modelEntity1', 'modelEntity2', 'modelEntity3'];
+            const models = ['base', 'cars', 'newRoad', 'signs-basic', 'signs-old', 'signs-new', 'parking', 'seats1', 'seats2', 'bushes', 'trees'];
 
             // Hide all models
             models.forEach(model => {
@@ -148,34 +148,48 @@
 
             // Show selected model
             if (selectedModel === 'newRoad') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('signs-new').setAttribute('visible', 'true');
             } else if (selectedModel === 'parking') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('parking').setAttribute('visible', 'true');
             } else if (selectedModel === 'parking_trees') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('parking').setAttribute('visible', 'true');
                 document.getElementById('bushes').setAttribute('visible', 'true');
                 document.getElementById('trees').setAttribute('visible', 'true');
                 document.getElementById('signs-new').setAttribute('visible', 'true');
             } else if (selectedModel === 'parking_seats') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('parking').setAttribute('visible', 'true');
                 document.getElementById('seats2').setAttribute('visible', 'true');
                 document.getElementById('signs-new').setAttribute('visible', 'true');
             } else if (selectedModel === 'seatings') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('seats').setAttribute('visible', 'true');
                 document.getElementById('bushes').setAttribute('visible', 'true');
                 document.getElementById('signs-new').setAttribute('visible', 'true');
             } else if (selectedModel === 'seatings_trees') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('seats').setAttribute('visible', 'true');
                 document.getElementById('bsuhes').setAttribute('visible', 'true');
                 document.getElementById('trees').setAttribute('visible', 'true');
                 document.getElementById('signs-new').setAttribute('visible', 'true');
             } else if (selectedModel === 'trees') {
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('trees').setAttribute('visible', 'true');
                 document.getElementById('signs-new').setAttribute('visible', 'true');
