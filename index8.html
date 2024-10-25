@@ -59,7 +59,7 @@
                       rotation="0 180 0" 
                       visible="false"></a-entity>
             <a-entity id="modelEntity3" 
-                      obj-model="obj: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/cars.obj; mtl: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/cars.mtl" 
+                      obj-model="obj: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/bushes.obj; mtl: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/bushes.mtl" 
                       scale="0.5 0.5 0.5" 
                       position="0 0.1 0.5" 
                       rotation="0 180 0" 
@@ -85,6 +85,7 @@
             } else if (selectedModel === 'model2') {
                 document.getElementById('modelEntity2').setAttribute('visible', 'true');
             } else if (selectedModel === 'model3') {
+                document.getElementById('modelEntity1').setAttribute('visible', 'true');
                 document.getElementById('modelEntity3').setAttribute('visible', 'true');
             }
         });
