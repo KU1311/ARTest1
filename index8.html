@@ -57,7 +57,7 @@
                      width="1" 
                      height="1" 
                      color="#0000FF" 
-                     opacity="0.2"></a-plane>
+                     opacity="0"></a-plane>
             <!-- 3D Models -->
                     <a-entity id="base" 
                       obj-model="obj: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/base2.obj; mtl: https://raw.githubusercontent.com/KU1311/ARTest1/main/models/base2.mtl"
@@ -166,6 +166,7 @@
                 document.getElementById('cars').setAttribute('visible', 'true');
                 document.getElementById('newRoad').setAttribute('visible', 'true');
                 document.getElementById('parking').setAttribute('visible', 'true');
+                document.getElementById('bushes').setAttribute('visible', 'true');
             } else if (selectedModel === 'parking_trees') {
                 document.getElementById('base').setAttribute('visible', 'true');
                 document.getElementById('cars').setAttribute('visible', 'true');
