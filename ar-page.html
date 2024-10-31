@@ -154,6 +154,8 @@
             models.forEach(model => {
                 document.getElementById(model).setAttribute('visible', 'false');
             });
+                document.getElementById('base').setAttribute('visible', 'true');
+                document.getElementById('cars').setAttribute('visible', 'true');
 
             // Show selected model
             if (selectedModel === 'newRoad') {
