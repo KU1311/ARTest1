@@ -260,11 +260,11 @@
     // Load all models when the application starts
     loadAllModels().then(() => {
         // Set up the initial camera position
-        camera.position.z = -5;
-        camera.position.y = 20;
+        camera.position.z = -20;
+        camera.position.y = 2;
         camera.position.x = -10;
 
-        camera.lookAt(new THREE.Vector3(-100, 0, 10));
+        camera.lookAt(new THREE.Vector3(-100, 100, 10));
         
         // Initial visibility setup
         toggleModelVisibility('none'); // Hide all additional models initially
