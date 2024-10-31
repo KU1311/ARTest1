@@ -122,7 +122,7 @@
     
     // Set camera position
     //camera.position.set(0, 2, -5); // Adjusted for better visibility
-    camera.lookAt(-100, 0, 0); // Look at the origin
+    //camera.lookAt(-100, 0, 0); // Look at the origin
 
     // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -264,7 +264,7 @@
         camera.position.y = 20;
         camera.position.x = -10;
 
-        camera.lookAt(new THREE.Vector3(-5, 0, 10));
+        camera.lookAt(new THREE.Vector3(-100, 0, 10));
         
         // Initial visibility setup
         toggleModelVisibility('none'); // Hide all additional models initially
