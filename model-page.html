@@ -8,24 +8,24 @@
         body {
             margin: 0;
             overflow: hidden;
-            display: flex;
-            flex-direction: column; /* Stack elements vertically */
             height: 100vh; /* Full height of the viewport */
+            position: relative; /* Set relative positioning for absolute elements */
         }
         #canvas {
             width: 100%; /* Full width */
-            height: 60vh; /* Set a fixed height for the canvas */
+            height: 100%; /* Full height for the canvas */
             display: block;
         }
         #controls {
+            position: absolute; /* Absolute positioning */
+            top: 10px; /* Distance from the top */
+            left: 10px; /* Distance from the left */
             background: rgba(255, 255, 255, 0.8);
             padding: 10px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             overflow-y: auto; /* Allow scrolling if content exceeds height */
             text-align: center; /* Center align text inside controls */
-            width: 100%; /* Full width for controls */
-            max-width: 400px; /* Set a max width for better appearance */
-            margin: 0 auto; /* Center controls horizontally */
+            width: 200px; /* Fixed width for controls */
         }
         h2 {
             margin: 0;
@@ -41,7 +41,7 @@
             font-size: 16px; /* Font size for dropdown */
         }
         /* Media Query for Responsive Design */
-        @media  {
+        @media (max-width: 600px) {
             #controls {
                 padding: 5px; /* Less padding on mobile */
             }
@@ -75,7 +75,6 @@
     </select>
 </div>
 <div id="canvas"></div>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
@@ -119,10 +118,6 @@
         texture.needsUpdate = true; // Update texture
         return texture;
     }
-    
-    // Set camera position
-    //camera.position.set(0, 2, -5); // Adjusted for better visibility
-    //camera.lookAt(-100, 0, 0); // Look at the origin
 
     // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -147,30 +142,24 @@
         const mtlLoader = new THREE.MTLLoader();
         const objLoader = new THREE.OBJLoader();
     
-        // Load the material file
         mtlLoader.load(mtlPath, (materials) => {
             materials.preload(); // Preload materials
     
-            // Load the OBJ file
             objLoader.setMaterials(materials);
             objLoader.load(objPath, (object) => {
-                // Traverse through all children of the loaded object
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        // Adjust material properties to make it matte
                         if (child.material) {
                             if (Array.isArray(child.material)) {
-                                // Handle multiple materials
                                 child.material.forEach((material) => {
                                     if (material.isMeshStandardMaterial) {
-                                        material.roughness = 1; // High roughness for matte finish
-                                        material.metalness = 0; // No metallic reflection
+                                        material.roughness = 1;
+                                        material.metalness = 0;
                                     } else if (material.isMeshPhongMaterial) {
-                                        material.shininess = 0; // Set shininess to 0 for matte finish
+                                        material.shininess = 0;
                                     }
                                 });
                             } else {
-                                // Single material case
                                 if (child.material.isMeshStandardMaterial) {
                                     child.material.roughness = 1;
                                     child.material.metalness = 0;
@@ -179,21 +168,17 @@
                                 }
                             }
                         }
-    
-                        // Enable shadows
-                        child.castShadow = true; // Enable casting shadows
-                        child.receiveShadow = true; // Enable receiving shadows
+                        child.castShadow = true;
+                        child.receiveShadow = true;
                     }
                 });
                 
                 scene.add(object);
-                // Optionally set the name or add the object to a models object
-                if (addToScene==false) {
-                    object.visible = false
+                if (addToScene === false) {
+                    object.visible = false;
                 }
-                // Store the model in a global models object if needed
                 models[modelName] = object; 
-                console.log("ADDED ", modelName)
+                console.log("ADDED ", modelName);
             });
         });
     }
@@ -215,42 +200,33 @@
     
     // Define which models to display for each dropdown option
     const modelVisibilityMap = {
-        newRoad: ['newRoad','signs-new'],
-        parking: ['newRoad', 'parking', 'bushes','signs-new'],
-        parking_trees: ['newRoad', 'parking', 'bushes', 'trees','signs-new'],
-        parking_seats: ['newRoad', 'parking', 'seats2','signs-new'],
-        seatings: ['newRoad', 'seats', 'bushes','signs-new'],
-        seatings_trees: ['newRoad', 'seats', 'bushes', 'trees','signs-new'],
-        trees: ['newRoad', 'trees','signs-new'],
+        newRoad: ['newRoad', 'signs-new'],
+        parking: ['newRoad', 'parking', 'bushes', 'signs-new'],
+        parking_trees: ['newRoad', 'parking', 'bushes', 'trees', 'signs-new'],
+        parking_seats: ['newRoad', 'parking', 'seats2', 'signs-new'],
+        seatings: ['newRoad', 'seats', 'bushes', 'signs-new'],
+        seatings_trees: ['newRoad', 'seats', 'bushes', 'trees', 'signs-new'],
+        trees: ['newRoad', 'trees', 'signs-new'],
         none: ['signs-old']
     };
     
     // Function to toggle model visibility based on selection
     function toggleModelVisibility(selectedModel) {
-        // Set all models to invisible first
         for (let modelName in models) {
             if (models[modelName]) {
                 models[modelName].visible = false; // Hide all models
             }
         }
 
-        // Always show the base model
-        if (models['base']) {
-            models['base'].visible = true; 
-        }
-        if (models['cars']) {
-            models['cars'].visible = true; 
-        }
-        if (models['signs-basic']) {
-            models['signs-basic'].visible = true; 
-        }
+        if (models['base']) models['base'].visible = true; 
+        if (models['cars']) models['cars'].visible = true; 
+        if (models['signs-basic']) models['signs-basic'].visible = true; 
         
-        // Show the selected model(s) along with the base model
         const modelsToShow = modelVisibilityMap[selectedModel] || [];
         modelsToShow.forEach((model) => {
             if (models[model]) {
-                models[model].visible = true; // Show selected models
-                console.log(`Showing model: ${model}`); // Debugging statement
+                models[model].visible = true; 
+                console.log(`Showing model: ${model}`);
             } else {
                 console.warn(`Model ${model} does not exist in models.`);
             }
@@ -259,32 +235,26 @@
     
     // Load all models when the application starts
     loadAllModels().then(() => {
-        // Set up the initial camera position
         camera.position.z = -20;
         camera.position.y = 2;
         camera.position.x = -5;
-
         camera.lookAt(new THREE.Vector3(-100, 100, 10));
         
-        // Initial visibility setup
-        toggleModelVisibility('none'); // Hide all additional models initially
+        toggleModelVisibility('none'); 
 
-        // Set up the dropdown event listener
         const modelSelect = document.getElementById('modelSelect');
         modelSelect.addEventListener('change', (event) => {
             const selectedModel = event.target.value;
-            console.log(`Selected model: ${selectedModel}`); // Debugging statement
-            toggleModelVisibility(selectedModel); // Toggle visibility based on selection
+            console.log(`Selected model: ${selectedModel}`);
+            toggleModelVisibility(selectedModel);
         });
 
-        // Render loop
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // Update controls for damping effect
+            controls.update(); 
             renderer.render(scene, camera);
         }
 
-        // Start the animation loop
         animate();
     }).catch(error => {
         console.error('Error loading models:', error);
