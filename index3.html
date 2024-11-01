@@ -2,60 +2,294 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>AR Demo</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>油旺區健康城市建議 - 擴闊行人路想像 3D模型</title>
     <style>
-        #debugInfo {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            height: 100vh; /* Full height of the viewport */
+        }
+        #canvas {
+            width: 100%; /* Full width */
+            height: 60vh; /* Set a fixed height for the canvas */
+            display: block;
+        }
+        #controls {
+            background: rgba(255, 255, 255, 0.8);
             padding: 10px;
-            z-index: 1000;
-            font-family: Arial, sans-serif;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            overflow-y: auto; /* Allow scrolling if content exceeds height */
+            text-align: center; /* Center align text inside controls */
+            width: 100%; /* Full width for controls */
+            max-width: 200px; /* Set a max width for better appearance */
+            margin: 0 auto; /* Center controls horizontally */
+        }
+        h2 {
+            margin: 0;
+            font-size: 24px; /* Default font size for desktop */
+        }
+        label {
+            display: block;
+            margin: 5px 0;
+        }
+        select {
+            width: 100%; /* Full width for the dropdown */
+            padding: 5px; /* Padding for better appearance */
+            font-size: 16px; /* Font size for dropdown */
+        }
+        /* Media Query for Responsive Design */
+        @media  {
+            #controls {
+                padding: 5px; /* Less padding on mobile */
+            }
+            h2 {
+                font-size: 20px; /* Smaller title on mobile */
+                margin-bottom: 10px; /* Add space below title */
+            }
+            label {
+                font-size: 16px; /* Smaller font for labels on mobile */
+            }
+            select {
+                font-size: 16px; /* Make dropdown font size smaller too */
+            }
         }
     </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-    <div id="debugInfo"></div>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <a-marker preset="hiro">
-            <a-plane position="0 0 0" 
-                     rotation="-90 0 0" 
-                     width="1" 
-                     height="1" 
-                     color="#0000FF" 
-                     opacity="0.5"></a-plane>
-        </a-marker>
-        <a-entity camera></a-entity>
-    </a-scene>
+<body>
 
-    <script>
-        function updateDebugInfo() {
-            const marker = document.querySelector('a-marker');
-            const camera = document.querySelector('a-entity[camera]');
-            const debugInfo = document.getElementById('debugInfo');
+<div id="controls">
+    <h2>您想像中的行人路是怎樣的呢</h2>
+    <label for="modelSelect">請選擇模型:</label>
+    <select id="modelSelect">
+        <option value="none">不擴闊行人路</option>
+        <option value="newRoad">擴闊行人路, 不另設設施</option>
+        <option value="parking">泊車位和花槽</option>
+        <option value="parking_trees">泊車位, 花槽, 樹</option>
+        <option value="parking_seats">泊車位, 座椅</option>
+        <option value="seatings">座椅和花槽</option>
+        <option value="seatings_trees">座椅, 花槽, 樹</option>
+        <option value="trees">樹</option>
+    </select>
+</div>
+<div id="canvas"></div>
 
-            if (marker && camera) {
-                const markerPosition = marker.object3D.position;
-                const markerRotation = marker.object3D.rotation;
-                const cameraPosition = camera.object3D.position;
 
-                debugInfo.innerHTML = `
-                    Marker Visible: ${marker.object3D.visible}<br>
-                    Marker Position: ${markerPosition.x.toFixed(2)}, ${markerPosition.y.toFixed(2)}, ${markerPosition.z.toFixed(2)}<br>
-                    Marker Rotation: ${markerRotation.x.toFixed(2)}, ${markerRotation.y.toFixed(2)}, ${markerRotation.z.toFixed(2)}<br>
-                    Camera Position: ${cameraPosition.x.toFixed(2)}, ${cameraPosition.y.toFixed(2)}, ${cameraPosition.z.toFixed(2)}
-                `;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/MTLLoader.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
+<script>
+    // Initialize your scene, camera, and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas').appendChild(renderer.domElement);
+
+    // Set the background color
+    const skyColor = new THREE.Color(0x87CEEB); // Light blue
+    const groundColor = new THREE.Color(0xA9A9A9); // Gray
+    
+    // Create a gradient effect
+    const gradientTexture = createGradientTexture(skyColor, groundColor);
+    scene.background = gradientTexture;
+    
+    // Function to create a gradient texture
+    function createGradientTexture(skyColor, groundColor) {
+        const size = 512; // Texture size
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        
+        const context = canvas.getContext('2d');
+        
+        // Create gradient
+        const gradient = context.createLinearGradient(0, 0, 0, size);
+        gradient.addColorStop(0, skyColor.getStyle());
+        gradient.addColorStop(1, groundColor.getStyle());
+    
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, size, size);
+        
+        // Create texture from canvas
+        const texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true; // Update texture
+        return texture;
+    }
+    
+    // Set camera position
+    //camera.position.set(0, 2, -5); // Adjusted for better visibility
+    //camera.lookAt(-100, 0, 0); // Look at the origin
+
+    // Add lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(10, 10, 10);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+
+    // Initialize OrbitControls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = true;
+
+    // Global variable to store loaded models
+    let models = {};
+    
+    // Function to load models
+    function loadModel(mtlPath, objPath, modelName, addToScene = false) {
+        const mtlLoader = new THREE.MTLLoader();
+        const objLoader = new THREE.OBJLoader();
+    
+        // Load the material file
+        mtlLoader.load(mtlPath, (materials) => {
+            materials.preload(); // Preload materials
+    
+            // Load the OBJ file
+            objLoader.setMaterials(materials);
+            objLoader.load(objPath, (object) => {
+                // Traverse through all children of the loaded object
+                object.traverse((child) => {
+                    if (child.isMesh) {
+                        // Adjust material properties to make it matte
+                        if (child.material) {
+                            if (Array.isArray(child.material)) {
+                                // Handle multiple materials
+                                child.material.forEach((material) => {
+                                    if (material.isMeshStandardMaterial) {
+                                        material.roughness = 1; // High roughness for matte finish
+                                        material.metalness = 0; // No metallic reflection
+                                    } else if (material.isMeshPhongMaterial) {
+                                        material.shininess = 0; // Set shininess to 0 for matte finish
+                                    }
+                                });
+                            } else {
+                                // Single material case
+                                if (child.material.isMeshStandardMaterial) {
+                                    child.material.roughness = 1;
+                                    child.material.metalness = 0;
+                                } else if (child.material.isMeshPhongMaterial) {
+                                    child.material.shininess = 0;
+                                }
+                            }
+                        }
+    
+                        // Enable shadows
+                        child.castShadow = true; // Enable casting shadows
+                        child.receiveShadow = true; // Enable receiving shadows
+                    }
+                });
+                
+                scene.add(object);
+                // Optionally set the name or add the object to a models object
+                if (addToScene==false) {
+                    object.visible = false
+                }
+                // Store the model in a global models object if needed
+                models[modelName] = object; 
+                console.log("ADDED ", modelName)
+            });
+        });
+    }
+
+    // Function to load all models at once
+    async function loadAllModels() {
+        await loadModel('models/base2.mtl', 'models/base2.obj', 'base', true);
+        await loadModel('models/cars.mtl', 'models/cars.obj', 'cars', true);
+        await loadModel('models/signs-basic.mtl', 'models/signs-basic.obj', 'signs-basic', true);
+        await loadModel('models/signs-old.mtl', 'models/signs-old.obj', 'signs-old', true);
+        await loadModel('models/signs-new.mtl', 'models/signs-new.obj', 'signs-new', false);
+        await loadModel('models/newRoad.mtl', 'models/newRoad.obj', 'newRoad', false);
+        await loadModel('models/parking.mtl', 'models/parking.obj', 'parking', false);
+        await loadModel('models/seats1.mtl', 'models/seats1.obj', 'seats', false);
+        await loadModel('models/seats2.mtl', 'models/seats2.obj', 'seats2', false);
+        await loadModel('models/bushes.mtl', 'models/bushes.obj', 'bushes', false);
+        await loadModel('models/trees.mtl', 'models/trees.obj', 'trees', false);
+    }
+    
+    // Define which models to display for each dropdown option
+    const modelVisibilityMap = {
+        newRoad: ['newRoad','signs-new'],
+        parking: ['newRoad', 'parking', 'bushes','signs-new'],
+        parking_trees: ['newRoad', 'parking', 'bushes', 'trees','signs-new'],
+        parking_seats: ['newRoad', 'parking', 'seats2','signs-new'],
+        seatings: ['newRoad', 'seats', 'bushes','signs-new'],
+        seatings_trees: ['newRoad', 'seats', 'bushes', 'trees','signs-new'],
+        trees: ['newRoad', 'trees','signs-new'],
+        none: ['signs-old']
+    };
+    
+    // Function to toggle model visibility based on selection
+    function toggleModelVisibility(selectedModel) {
+        // Set all models to invisible first
+        for (let modelName in models) {
+            if (models[modelName]) {
+                models[modelName].visible = false; // Hide all models
             }
-
-            requestAnimationFrame(updateDebugInfo);
         }
 
-        updateDebugInfo();
-    </script>
+        // Always show the base model
+        if (models['base']) {
+            models['base'].visible = true; 
+        }
+        if (models['cars']) {
+            models['cars'].visible = true; 
+        }
+        if (models['signs-basic']) {
+            models['signs-basic'].visible = true; 
+        }
+        
+        // Show the selected model(s) along with the base model
+        const modelsToShow = modelVisibilityMap[selectedModel] || [];
+        modelsToShow.forEach((model) => {
+            if (models[model]) {
+                models[model].visible = true; // Show selected models
+                console.log(`Showing model: ${model}`); // Debugging statement
+            } else {
+                console.warn(`Model ${model} does not exist in models.`);
+            }
+        });
+    }
+    
+    // Load all models when the application starts
+    loadAllModels().then(() => {
+        // Set up the initial camera position
+        camera.position.z = -20;
+        camera.position.y = 2;
+        camera.position.x = -5;
+
+        camera.lookAt(new THREE.Vector3(-100, 100, 10));
+        
+        // Initial visibility setup
+        toggleModelVisibility('none'); // Hide all additional models initially
+
+        // Set up the dropdown event listener
+        const modelSelect = document.getElementById('modelSelect');
+        modelSelect.addEventListener('change', (event) => {
+            const selectedModel = event.target.value;
+            console.log(`Selected model: ${selectedModel}`); // Debugging statement
+            toggleModelVisibility(selectedModel); // Toggle visibility based on selection
+        });
+
+        // Render loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // Update controls for damping effect
+            renderer.render(scene, camera);
+        }
+
+        // Start the animation loop
+        animate();
+    }).catch(error => {
+        console.error('Error loading models:', error);
+    });
+</script>
+
 </body>
 </html>
